@@ -454,6 +454,5 @@ Users should consult **licensed professionals** for formal evaluation.
 
 ---
 
-Made with 🧠 and 💙
 
 </div>
