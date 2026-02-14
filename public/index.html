@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADHD Screening Test</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <div id="screen-login" class="screen active">
+      <div class="card login-card">
+        <div class="logo">
+          <div class="logo-icon">&#9881;</div>
+          <h1>ADHD Screening</h1>
+          <p class="subtitle">Likelihood Analysis Tool</p>
+        </div>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your name" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+          <div class="divider"><span>or</span></div>
+          <button type="button" id="guest-btn" class="btn btn-outline btn-full">Continue as Guest</button>
+        </form>
+        <p id="login-error" class="error-text"></p>
+      </div>
+    </div>
+
+    <div id="screen-welcome" class="screen">
+      <div class="card welcome-card">
+        <div class="welcome-icon">&#128075;</div>
+        <h1>Welcome, <span id="welcome-name"></span>!</h1>
+        <p class="welcome-text">You are about to take an ADHD likelihood screening. This process involves a few simple steps before you begin the tests.</p>
+        <div class="steps-preview">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <span>Consent Agreement</span>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <span>Basic Information</span>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <span>Take Screening Tests</span>
+          </div>
+        </div>
+        <button id="welcome-continue" class="btn btn-primary btn-full">Let's Get Started</button>
+      </div>
+    </div>
+
+    <div id="screen-consent" class="screen">
+      <div class="card consent-card">
+        <h1>Consent Agreement</h1>
+        <p class="consent-subtitle">Please read and acknowledge the following before proceeding.</p>
+        <div class="consent-box">
+          <div class="consent-item">
+            <div class="consent-icon">&#9989;</div>
+            <p>I confirm that I am an <strong>adult aged 18 years or older</strong>.</p>
+          </div>
+          <div class="consent-item">
+            <div class="consent-icon">&#9989;</div>
+            <p>I understand that this screening tool provides a <strong>likelihood analysis only</strong> and is <strong>not a medical diagnosis</strong>.</p>
+          </div>
+          <div class="consent-item">
+            <div class="consent-icon">&#9989;</div>
+            <p>I understand that the results of this screening should <strong>not replace professional medical advice</strong>, diagnosis, or treatment.</p>
+          </div>
+          <div class="consent-item">
+            <div class="consent-icon">&#9989;</div>
+            <p>I acknowledge that I am taking this test <strong>voluntarily</strong> for informational purposes.</p>
+          </div>
+        </div>
+        <div class="consent-check">
+          <label class="checkbox-label">
+            <input type="checkbox" id="consent-checkbox">
+            <span class="checkmark"></span>
+            <span>I have read and agree to all the above statements</span>
+          </label>
+        </div>
+        <button id="consent-continue" class="btn btn-primary btn-full" disabled>I Agree & Continue</button>
+      </div>
+    </div>
+
+    <div id="screen-demographics" class="screen">
+      <div class="card demographics-card">
+        <h1>Tell Us About Yourself</h1>
+        <p class="demo-subtitle">This information helps contextualize your screening results.</p>
+        <form id="demographics-form">
+          <div class="form-group">
+            <label>Gender</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="gender" value="Female">
+                <span class="radio-btn"></span>
+                <span>Female</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="gender" value="Male">
+                <span class="radio-btn"></span>
+                <span>Male</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="gender" value="Non-binary">
+                <span class="radio-btn"></span>
+                <span>Non-binary</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="gender" value="Prefer not to say">
+                <span class="radio-btn"></span>
+                <span>Prefer not to say</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Age Group</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="ageGroup" value="18-25">
+                <span class="radio-btn"></span>
+                <span>18 - 25</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ageGroup" value="26-35">
+                <span class="radio-btn"></span>
+                <span>26 - 35</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ageGroup" value="36-45">
+                <span class="radio-btn"></span>
+                <span>36 - 45</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ageGroup" value="46-55">
+                <span class="radio-btn"></span>
+                <span>46 - 55</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ageGroup" value="56-65">
+                <span class="radio-btn"></span>
+                <span>56 - 65</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ageGroup" value=">65">
+                <span class="radio-btn"></span>
+                <span>> 65</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Ethnicity</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="ethnicity" value="White">
+                <span class="radio-btn"></span>
+                <span>White</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ethnicity" value="Black">
+                <span class="radio-btn"></span>
+                <span>Black</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ethnicity" value="Pacific Islander">
+                <span class="radio-btn"></span>
+                <span>Pacific Islander</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ethnicity" value="Asian">
+                <span class="radio-btn"></span>
+                <span>Asian</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ethnicity" value="South Asian">
+                <span class="radio-btn"></span>
+                <span>South Asian</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ethnicity" value="Two or More Races">
+                <span class="radio-btn"></span>
+                <span>Two or More Races</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="ethnicity" value="Other">
+                <span class="radio-btn"></span>
+                <span>Other</span>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full" id="demo-submit" disabled>Continue to Tests</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="screen-tests" class="screen">
+      <div class="card tests-card">
+        <h1>Screening Tests</h1>
+        <p class="tests-subtitle">Please complete the following tests. Each one takes only a few minutes.</p>
+        <div class="test-list">
+          <div class="test-card" id="test-1-card">
+            <div class="test-info">
+              <div class="test-badge">Test 1</div>
+              <h3>Coming Soon</h3>
+              <p>This test will be available shortly.</p>
+            </div>
+            <button class="btn btn-outline" disabled>Not Available</button>
+          </div>
+          <div class="test-card" id="test-2-card">
+            <div class="test-info">
+              <div class="test-badge">Test 2</div>
+              <h3>Coming Soon</h3>
+              <p>This test will be available shortly.</p>
+            </div>
+            <button class="btn btn-outline" disabled>Not Available</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

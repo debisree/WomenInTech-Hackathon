@@ -1,5 +1,44 @@
+<<<<<<< HEAD
+=======
+modules = ["nodejs-20"]
+>>>>>>> 316667b5efcac8801fa64f48485f4f9a383646f9
 [agent]
 expertMode = true
 
 [nix]
 channel = "stable-25_05"
+<<<<<<< HEAD
+=======
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node index.js"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["node", "index.js"]
+>>>>>>> 316667b5efcac8801fa64f48485f4f9a383646f9
