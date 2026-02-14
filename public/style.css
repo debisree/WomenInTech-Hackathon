@@ -8,9 +8,70 @@ body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
+}
+
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 56px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+}
+
+.top-nav.hidden {
+  display: none;
+}
+
+.nav-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #667eea;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.nav-btn:hover {
+  background: #f0f0ff;
+  color: #667eea;
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.nav-logout {
+  color: #e53e3e;
+  margin-left: 0.5rem;
+}
+
+.nav-logout:hover {
+  background: #fff5f5;
+  color: #c53030;
 }
 
 #app {
@@ -20,6 +81,10 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1rem;
+}
+
+#app.has-nav {
+  padding-top: 72px;
 }
 
 .screen {
@@ -166,6 +231,15 @@ body {
   min-height: 1.2em;
 }
 
+.success-text {
+  color: #38a169;
+  text-align: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  min-height: 1.2em;
+}
+
 .welcome-card {
   text-align: center;
 }
@@ -221,6 +295,17 @@ body {
 .step-item span {
   font-weight: 500;
   color: #555;
+}
+
+.step-status {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #999;
+}
+
+.step-status.done {
+  color: #38a169;
 }
 
 .consent-card h1,
@@ -423,6 +508,19 @@ body {
 
   .logo h1 {
     font-size: 1.5rem;
+  }
+
+  .top-nav {
+    padding: 0 0.75rem;
+  }
+
+  .nav-brand {
+    font-size: 0.95rem;
+  }
+
+  .nav-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
   }
 
   .test-card {

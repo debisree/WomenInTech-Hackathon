@@ -36,8 +36,8 @@ app.post('/api/consent', (req, res) => {
 
 app.post('/api/demographics', (req, res) => {
   if (!req.session.user) return res.status(401).json({ message: 'Not logged in' });
-  const { gender, ageGroup, ethnicity } = req.body;
-  req.session.user.demographics = { gender, ageGroup, ethnicity };
+  const { gender, ageGroup, ethnicity, adhdDiagnosed } = req.body;
+  req.session.user.demographics = { gender, ageGroup, ethnicity, adhdDiagnosed };
   res.json({ success: true });
 });
 

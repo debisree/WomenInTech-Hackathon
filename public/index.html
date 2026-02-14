@@ -7,6 +7,17 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <nav id="top-nav" class="top-nav hidden">
+    <div class="nav-brand">ADHD Screening</div>
+    <div class="nav-links">
+      <button class="nav-btn active" data-target="screen-welcome" id="nav-home">Home</button>
+      <button class="nav-btn" data-target="screen-demographics" id="nav-info">My Info</button>
+      <button class="nav-btn" data-target="screen-tests" id="nav-tests">Tests</button>
+      <button class="nav-btn nav-logout" id="nav-logout">Logout</button>
+    </div>
+  </nav>
+
   <div id="app">
 
     <div id="screen-login" class="screen active">
@@ -39,13 +50,15 @@
         <h1>Welcome, <span id="welcome-name"></span>!</h1>
         <p class="welcome-text">You are about to take an ADHD likelihood screening. This process involves a few simple steps before you begin the tests.</p>
         <div class="steps-preview">
-          <div class="step-item">
+          <div class="step-item" id="step-consent">
             <div class="step-num">1</div>
             <span>Consent Agreement</span>
+            <span class="step-status" id="step-consent-status"></span>
           </div>
           <div class="step-item">
             <div class="step-num">2</div>
             <span>Basic Information</span>
+            <span class="step-status" id="step-info-status"></span>
           </div>
           <div class="step-item">
             <div class="step-num">3</div>
@@ -92,7 +105,7 @@
     <div id="screen-demographics" class="screen">
       <div class="card demographics-card">
         <h1>Tell Us About Yourself</h1>
-        <p class="demo-subtitle">This information helps contextualize your screening results.</p>
+        <p class="demo-subtitle">This information helps contextualize your screening results. You can update this anytime.</p>
         <form id="demographics-form">
           <div class="form-group">
             <label>Gender</label>
@@ -197,7 +210,34 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-full" id="demo-submit" disabled>Continue to Tests</button>
+          <div class="form-group">
+            <label>Have you ever been diagnosed with ADHD?</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="adhdDiagnosed" value="Yes">
+                <span class="radio-btn"></span>
+                <span>Yes</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="adhdDiagnosed" value="No">
+                <span class="radio-btn"></span>
+                <span>No</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="adhdDiagnosed" value="Not sure">
+                <span class="radio-btn"></span>
+                <span>Not sure</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="adhdDiagnosed" value="Prefer not to say">
+                <span class="radio-btn"></span>
+                <span>Prefer not to say</span>
+              </label>
+            </div>
+          </div>
+
+          <p id="demo-saved-msg" class="success-text"></p>
+          <button type="submit" class="btn btn-primary btn-full" id="demo-submit" disabled>Save & Continue to Tests</button>
         </form>
       </div>
     </div>
