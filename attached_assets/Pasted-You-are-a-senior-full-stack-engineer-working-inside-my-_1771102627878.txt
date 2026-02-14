@@ -1,0 +1,135 @@
+You are a senior full-stack engineer working inside my existing Replit repo. I already implemented a “Time Perception Challenge” (time estimation test) and a results screen that currently shows:
+
+a per-trial table
+
+MAE, error variability (std dev), bias
+
+a “Time Control Score” (0–100) that is often showing 0, confusing users
+
+Your task: Improve the scoring UX and results explanation (no new test logic, no per-trial feedback during the test). Keep changes minimal and localized to the time test feature and results page.
+
+IMPORTANT RULES
+
+Do NOT change unrelated parts of the app.
+
+Follow existing routing/navigation patterns.
+
+Do NOT add per-trial feedback during the test (results only at end).
+
+Keep existing captured data fields; you may compute additional derived metrics at results time.
+
+Ensure the score no longer frequently clamps to 0 due to bad normalization, unit mismatch, or overly strict caps.
+
+Add a clear disclaimer: “Not a diagnosis; influenced by sleep, stress, caffeine, meds; consider validated screeners + clinician.”
+
+1) Diagnose why score becomes 0 and fix it
+
+On the results calculation, identify and fix these common issues:
+
+Unit mismatch (seconds vs milliseconds). Ensure MAE/std/bias and caps use consistent units.
+
+Overly strict caps (e.g., 6000ms) that cause normalized values to saturate at 1 too easily.
+
+Unfair scoring across targets (6s vs 20s) when using raw milliseconds.
+
+Add a lightweight internal sanity check (dev-only or hidden behind a “details” toggle) that shows:
+
+MAE, std dev, bias
+
+chosen caps
+
+normalized values
+so we can confirm why a score is low.
+
+2) Improve scoring so it’s fair across different target times (recommended)
+
+Keep reporting MAE, variability, bias exactly as now, BUT compute the Time Control Score using relative error so it’s not unfair for longer targets:
+
+For scored trials:
+
+relative_abs_error = abs(actual-target)/target
+Compute:
+
+MAPE = mean(relative_abs_error) as %
+
+relative_variability = std(relative_abs_error) as %
+
+Use reasonable caps (e.g., 60% for both) and compute:
+
+normMAPE = clamp(MAPE/cap, 0..1)
+
+normVar = clamp(relative_variability/cap, 0..1)
+
+score = 100 * (1 - (0.60*normMAPE + 0.40*normVar))
+Clamp to 0..100, but tune so typical users do not frequently hit 0.
+
+If you decide to keep MAE/std-based scoring, then caps must scale with target magnitude (e.g., based on mean target) so the score doesn’t collapse.
+
+3) Add a “How we got your score” explanation panel (must-have)
+
+On the results screen, add a short, friendly “How we computed this” section that visually explains the score. It must include:
+
+Accuracy component (MAPE) with a progress bar
+
+Consistency component (relative variability) with a progress bar
+
+The final weighted formula shown in plain English (not math-heavy)
+
+Example wording: “We combine Accuracy (60%) and Consistency (40%). Lower error and steadier performance = higher score.”
+
+This should prevent the “0 feels broken” issue by showing why it’s low.
+
+4) Add simple graphic cues (no heavy chart libraries required)
+
+Add at least one lightweight visual cue (SVG/HTML/CSS is fine) to help users understand performance:
+
+Choose 1–2 of these:
+A) Target vs Your Time mini plot (dots or lines) across trials
+B) Signed error bars per trial (positive = overestimate, negative = underestimate)
+C) Absolute error bars per trial
+
+Keep it minimal and consistent with existing styling.
+
+5) Improve table readability (human-friendly)
+
+Keep the scored trials table but change columns to be easier to interpret:
+
+Target (s)
+
+Your time (s)
+
+Off by (s) (absolute)
+
+Direction (Over/Under)
+
+Also add a 1–2 sentence summary above the table derived from bias + variability, e.g.:
+
+“You tended to overestimate by ~0.9s on average, with moderate trial-to-trial variability.”
+
+6) Labels and messaging (non-medical)
+
+Keep category ranges but label them as task-based, not diagnostic:
+
+80–100: “Consistent time estimation”
+
+60–79: “Slight inconsistency”
+
+40–59: “Moderate inconsistency”
+
+0–39: “High inconsistency”
+
+Add a short “Retake tips” line:
+
+“For best results: be rested, avoid distractions, don’t count.”
+
+7) Deliverables
+
+Implement the improvements with minimal localized edits.
+
+Ensure the test still runs end-to-end.
+
+Provide a short “What I changed” summary listing files touched and where to click in the UI.
+
+Start by scanning the repo to find where the Time Perception Challenge scoring + results UI is implemented, then apply the above changes.
+
+If you paste that into Replit, it should come back with a clean PR-like set of edits: fixed scoring (no bogus zeros), a clear breakdown panel, and at least one simple visual cue.

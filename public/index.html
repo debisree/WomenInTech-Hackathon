@@ -463,13 +463,39 @@
           <span class="tp-score-label">Time Control Score</span>
         </div>
         <div class="tp-category" id="tp-category">--</div>
+
+        <div class="tp-breakdown">
+          <h3>How we got your score</h3>
+          <p class="tp-breakdown-intro">We combine two factors: how close your estimates were to the target (Accuracy, 60%) and how steady your performance was across trials (Consistency, 40%). Lower error and steadier performance = higher score.</p>
+          <div class="tp-breakdown-row">
+            <div class="tp-breakdown-label">
+              <span>Accuracy</span>
+              <span class="tp-breakdown-weight">60%</span>
+            </div>
+            <div class="tp-breakdown-bar-wrap">
+              <div class="tp-breakdown-bar tp-bar-acc" id="tp-acc-bar"></div>
+            </div>
+            <span class="tp-breakdown-val" id="tp-acc-val">--</span>
+          </div>
+          <div class="tp-breakdown-row">
+            <div class="tp-breakdown-label">
+              <span>Consistency</span>
+              <span class="tp-breakdown-weight">40%</span>
+            </div>
+            <div class="tp-breakdown-bar-wrap">
+              <div class="tp-breakdown-bar tp-bar-con" id="tp-con-bar"></div>
+            </div>
+            <span class="tp-breakdown-val" id="tp-con-val">--</span>
+          </div>
+        </div>
+
         <div class="tp-metrics">
           <div class="tp-metric">
-            <span class="tp-metric-label">Mean Absolute Error</span>
+            <span class="tp-metric-label">Avg. Error</span>
             <span class="tp-metric-value" id="tp-mae">--</span>
           </div>
           <div class="tp-metric">
-            <span class="tp-metric-label">Error Variability</span>
+            <span class="tp-metric-label">Variability</span>
             <span class="tp-metric-value" id="tp-variability">--</span>
           </div>
           <div class="tp-metric">
@@ -477,16 +503,33 @@
             <span class="tp-metric-value" id="tp-bias">--</span>
           </div>
         </div>
+
+        <div class="tp-chart-section">
+          <h3>Error per trial</h3>
+          <div id="tp-error-chart"></div>
+        </div>
+
+        <p class="tp-summary" id="tp-summary-text"></p>
+
         <div class="tp-table-wrap">
           <table class="tp-table" id="tp-results-table">
             <thead>
-              <tr><th>#</th><th>Target (s)</th><th>Your Time (s)</th><th>Abs Error (s)</th></tr>
+              <tr><th>Target (s)</th><th>Your Time (s)</th><th>Off By (s)</th><th>Direction</th></tr>
             </thead>
             <tbody id="tp-results-tbody"></tbody>
           </table>
         </div>
+
+        <details class="tp-details-toggle">
+          <summary>Scoring details</summary>
+          <div class="tp-details-content" id="tp-details-content"></div>
+        </details>
+
         <div class="tp-disclaimer">
-          This is not a diagnosis. Results may be influenced by sleep, stress, caffeine, or medications. Consider validated screeners and consult a clinician for professional assessment.
+          Not a diagnosis. Results may be influenced by sleep, stress, caffeine, or medications. Consider validated screeners and consult a clinician for professional assessment.
+        </div>
+        <div class="tp-retake-tip">
+          For best results: be rested, avoid distractions, don't count.
         </div>
         <div class="tp-result-actions">
           <button id="tp-retake" class="btn btn-outline">Retake Test</button>

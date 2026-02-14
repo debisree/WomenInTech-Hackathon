@@ -2,8 +2,10 @@ const TP = {
   PRACTICE_TARGETS: [6000, 12000],
   SCORED_POOL: [6000, 8000, 10000, 12000, 15000, 20000],
   SCORED_COUNT: 8,
-  MAE_CAP: 6000,
-  STD_CAP: 6000,
+  MAPE_CAP: 0.60,
+  VAR_CAP: 0.60,
+  ACCURACY_WEIGHT: 0.60,
+  CONSISTENCY_WEIGHT: 0.40,
 
   trials: [],
   currentIndex: 0,
@@ -139,14 +141,20 @@ const TP = {
     const variance = scored.reduce((s, t) => s + Math.pow(t.error_ms - meanError, 2), 0) / n;
     const stdDev = Math.sqrt(variance);
 
-    const normMAE = Math.min(mae / this.MAE_CAP, 1);
-    const normSTD = Math.min(stdDev / this.STD_CAP, 1);
-    let score = 100 - (0.55 * normMAE + 0.45 * normSTD) * 100;
+    const relErrors = scored.map(t => Math.abs(t.actual_ms - t.target_ms) / t.target_ms);
+    const mape = relErrors.reduce((s, v) => s + v, 0) / n;
+
+    const meanRel = relErrors.reduce((s, v) => s + v, 0) / n;
+    const relVar = Math.sqrt(relErrors.reduce((s, v) => s + Math.pow(v - meanRel, 2), 0) / n);
+
+    const normMAPE = Math.min(mape / this.MAPE_CAP, 1);
+    const normVar = Math.min(relVar / this.VAR_CAP, 1);
+    let score = 100 * (1 - (this.ACCURACY_WEIGHT * normMAPE + this.CONSISTENCY_WEIGHT * normVar));
     score = Math.max(0, Math.min(100, Math.round(score)));
 
     let category;
-    if (score >= 80) category = 'Typical timing consistency';
-    else if (score >= 60) category = 'Mild inconsistency';
+    if (score >= 80) category = 'Consistent time estimation';
+    else if (score >= 60) category = 'Slight inconsistency';
     else if (score >= 40) category = 'Moderate inconsistency';
     else category = 'High inconsistency';
 
@@ -156,6 +164,10 @@ const TP = {
       mae: Math.round(mae),
       variability: Math.round(stdDev),
       bias: Math.round(meanError),
+      mape: mape,
+      relVar: relVar,
+      normMAPE: normMAPE,
+      normVar: normVar,
       scoredTrials: scored
     };
   },
@@ -168,8 +180,8 @@ const TP = {
     document.getElementById('tp-mae').textContent = (results.mae / 1000).toFixed(2) + 's';
     document.getElementById('tp-variability').textContent = (results.variability / 1000).toFixed(2) + 's';
 
-    const biasLabel = results.bias > 0 ? 'overestimate' : results.bias < 0 ? 'underestimate' : 'none';
-    document.getElementById('tp-bias').textContent = (Math.abs(results.bias) / 1000).toFixed(2) + 's ' + biasLabel;
+    const biasDir = results.bias > 0 ? 'overestimate' : results.bias < 0 ? 'underestimate' : 'none';
+    document.getElementById('tp-bias').textContent = (Math.abs(results.bias) / 1000).toFixed(2) + 's ' + biasDir;
 
     const circle = document.getElementById('tp-score-circle');
     if (results.score >= 80) circle.className = 'tp-score-circle tp-score-good';
@@ -177,15 +189,52 @@ const TP = {
     else if (results.score >= 40) circle.className = 'tp-score-circle tp-score-moderate';
     else circle.className = 'tp-score-circle tp-score-high';
 
+    const accPct = Math.round((1 - results.normMAPE) * 100);
+    const conPct = Math.round((1 - results.normVar) * 100);
+    document.getElementById('tp-acc-bar').style.width = accPct + '%';
+    document.getElementById('tp-acc-val').textContent = accPct + '%';
+    document.getElementById('tp-con-bar').style.width = conPct + '%';
+    document.getElementById('tp-con-val').textContent = conPct + '%';
+
+    const biasWord = results.bias > 200 ? 'overestimate' : results.bias < -200 ? 'underestimate' : 'estimate fairly accurately';
+    const biasAmt = (Math.abs(results.bias) / 1000).toFixed(1);
+    const varWord = results.relVar < 0.10 ? 'very steady' : results.relVar < 0.20 ? 'fairly steady' : results.relVar < 0.35 ? 'moderate' : 'high';
+    let summaryText = '';
+    if (biasWord === 'estimate fairly accurately') {
+      summaryText = `You estimated time fairly accurately on average, with ${varWord} trial-to-trial variability.`;
+    } else {
+      summaryText = `You tended to ${biasWord} by ~${biasAmt}s on average, with ${varWord} trial-to-trial variability.`;
+    }
+    document.getElementById('tp-summary-text').textContent = summaryText;
+
+    const detailsEl = document.getElementById('tp-details-content');
+    detailsEl.innerHTML = `
+      <div class="tp-detail-row"><span>MAE (ms)</span><span>${results.mae}</span></div>
+      <div class="tp-detail-row"><span>Std Dev (ms)</span><span>${results.variability}</span></div>
+      <div class="tp-detail-row"><span>Bias (ms)</span><span>${results.bias}</span></div>
+      <div class="tp-detail-row"><span>MAPE</span><span>${(results.mape * 100).toFixed(1)}%</span></div>
+      <div class="tp-detail-row"><span>Rel. Variability</span><span>${(results.relVar * 100).toFixed(1)}%</span></div>
+      <div class="tp-detail-row"><span>MAPE Cap</span><span>${(this.MAPE_CAP * 100)}%</span></div>
+      <div class="tp-detail-row"><span>Var Cap</span><span>${(this.VAR_CAP * 100)}%</span></div>
+      <div class="tp-detail-row"><span>Norm MAPE</span><span>${results.normMAPE.toFixed(3)}</span></div>
+      <div class="tp-detail-row"><span>Norm Var</span><span>${results.normVar.toFixed(3)}</span></div>
+      <div class="tp-detail-row"><span>Formula</span><span>100 × (1 − 0.60×${results.normMAPE.toFixed(3)} − 0.40×${results.normVar.toFixed(3)})</span></div>
+    `;
+
+    this.renderErrorChart(results.scoredTrials);
+
     const tbody = document.getElementById('tp-results-tbody');
     tbody.innerHTML = '';
     results.scoredTrials.forEach((t, i) => {
+      const offBy = (t.abs_error_ms / 1000).toFixed(2);
+      const direction = t.error_ms > 0 ? 'Over' : t.error_ms < 0 ? 'Under' : 'Exact';
+      const dirClass = t.error_ms > 0 ? 'tp-dir-over' : t.error_ms < 0 ? 'tp-dir-under' : '';
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${i + 1}</td>
         <td>${(t.target_ms / 1000).toFixed(0)}</td>
         <td>${(t.actual_ms / 1000).toFixed(2)}</td>
-        <td>${(t.abs_error_ms / 1000).toFixed(2)}</td>
+        <td>${offBy}</td>
+        <td class="${dirClass}">${direction}</td>
       `;
       tbody.appendChild(row);
     });
@@ -199,6 +248,8 @@ const TP = {
       mae: results.mae,
       variability: results.variability,
       bias: results.bias,
+      mape: results.mape,
+      relVar: results.relVar,
       trials: this.trials,
       completedAt: new Date().toISOString()
     };
@@ -214,6 +265,40 @@ const TP = {
     }
 
     updateTest1Status(results.score, results.category);
+  },
+
+  renderErrorChart(trials) {
+    const container = document.getElementById('tp-error-chart');
+    container.innerHTML = '';
+
+    const maxErr = Math.max(...trials.map(t => Math.abs(t.error_ms / 1000)), 1);
+    const chartHeight = 120;
+    const halfH = chartHeight / 2;
+    const barW = Math.floor(100 / trials.length);
+
+    let html = `<div class="tp-chart-area" style="height:${chartHeight}px;">`;
+    html += `<div class="tp-chart-zero" style="top:${halfH}px;"></div>`;
+
+    trials.forEach((t, i) => {
+      const errSec = t.error_ms / 1000;
+      const barH = Math.abs(errSec / maxErr) * (halfH - 4);
+      const isOver = errSec >= 0;
+      const top = isOver ? (halfH - barH) : halfH;
+      const color = isOver ? '#dd6b20' : '#3182ce';
+      const left = i * barW + barW * 0.15;
+      const w = barW * 0.7;
+      html += `<div class="tp-chart-bar" style="left:${left}%;width:${w}%;height:${barH}px;top:${top}px;background:${color};" title="Trial ${i+1}: ${errSec > 0 ? '+' : ''}${errSec.toFixed(2)}s"></div>`;
+    });
+
+    html += '</div>';
+    html += '<div class="tp-chart-labels">';
+    trials.forEach((t, i) => {
+      html += `<span style="width:${barW}%">${i+1}</span>`;
+    });
+    html += '</div>';
+    html += '<div class="tp-chart-legend"><span class="tp-legend-over">Over</span><span class="tp-legend-under">Under</span></div>';
+
+    container.innerHTML = html;
   },
 
   init() {

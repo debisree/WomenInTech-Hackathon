@@ -34,13 +34,20 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 - **Flow**: Intro screen with instructions → 2 practice trials (6s, 12s, not scored) → 8 scored trials (randomized from pool [6,8,10,12,15,20s], no back-to-back duplicates) → Results screen
 - **Timing**: Uses `performance.now()` for high-precision measurement
 - **No per-trial feedback**: Shows "Recorded" between trials with 800ms auto-advance
-- **Scoring Algorithm**:
-  - MAE = mean absolute error (capped at 6000ms)
-  - Variability = std dev of errors (capped at 6000ms)
-  - Bias = mean signed error (over/underestimate)
-  - Time Control Score = 100 - (0.55 * normMAE + 0.45 * normSTD) * 100 (range 0-100)
-  - Categories: Typical (80+), Mild (60-79), Moderate (40-59), High (<40) inconsistency
-- **Results**: Score circle, metrics display, per-trial table, retake/back buttons, disclaimer
+- **Scoring Algorithm** (MAPE-based, fair across target lengths):
+  - relative_abs_error = abs(actual - target) / target per trial
+  - MAPE = mean of relative errors (capped at 60%)
+  - relative_variability = std dev of relative errors (capped at 60%)
+  - Time Control Score = 100 * (1 - 0.60 * normMAPE - 0.40 * normVar), range 0-100
+  - Categories: Consistent (80+), Slight (60-79), Moderate (40-59), High (<40) inconsistency
+- **Results screen includes**:
+  - Score circle with color-coded category
+  - "How we got your score" breakdown with Accuracy & Consistency progress bars
+  - Metrics display (MAE, variability, bias)
+  - Signed error bar chart per trial (over/under visualization)
+  - Natural-language summary of bias and variability
+  - Per-trial table with Target, Your Time, Off By, Direction columns
+  - Disclaimer and retake tips
 - **Persistence**: Results saved to session via API, restored on session reload
 
 ## Navigation
