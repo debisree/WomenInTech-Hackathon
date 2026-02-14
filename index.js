@@ -139,6 +139,7 @@ function finalizeReaction(reaction, user) {
   user.misses = reaction.misses;
   user.falseTaps = reaction.falseTaps;
   user.rtStdMs = rtStdMs;
+  user.reactionCompletedAt = new Date().toISOString();
   user.reactionSummary = `Avg RT: ${avgReactionMs}ms | Misses: ${reaction.misses} | False taps: ${reaction.falseTaps}`;
 
   if (!user.dashboardHistory) user.dashboardHistory = [];
@@ -359,6 +360,7 @@ app.post('/api/reaction/reset', (req, res) => {
   delete req.session.user.falseTaps;
   delete req.session.user.rtStdMs;
   delete req.session.user.reactionSummary;
+  delete req.session.user.reactionCompletedAt;
   res.json({ success: true });
 });
 
@@ -393,12 +395,18 @@ app.get('/api/dashboard', (req, res) => {
       (Math.min(user.misses || 0, 10) / 10) * 30 +
       (Math.min(user.falseTaps || 0, 5) / 5) * 30
     ));
+    const rtFlags = [];
+    if ((user.misses || 0) >= 5) rtFlags.push('high_misses');
+    if ((user.falseTaps || 0) >= 3) rtFlags.push('high_false_taps');
+    if ((user.rtStdMs || 0) > 200) rtFlags.push('high_variability');
     tests.reaction_time = {
       completed: true,
-      raw_metrics: { avgReactionMs: user.avgReactionMs, misses: user.misses, falseTaps: user.falseTaps, rtStdMs: user.rtStdMs },
+      timestamp: user.reactionCompletedAt || null,
+      raw_metrics: { avgReactionMs: user.avgReactionMs, misses: user.misses, falseTaps: user.falseTaps, rtStdMs: user.rtStdMs, totalTrials: N_TRIALS },
       normalized_signal: rtSignal,
-      quality_flags: []
+      quality_flags: rtFlags
     };
+    if (rtFlags.length) qualityFlags.push(...rtFlags);
   } else {
     tests.reaction_time = { completed: false };
   }

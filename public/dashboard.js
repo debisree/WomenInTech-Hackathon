@@ -150,10 +150,36 @@ const DASH = {
             html += `<p class="dash-quality-flag">Quality note: ${test.quality_flags.join(', ')}</p>`;
           }
         }
+
+        if (key === 'reaction_time') {
+          const m = test.raw_metrics;
+          const ts = test.timestamp ? new Date(test.timestamp).toLocaleString() : '';
+          html += `<p class="dash-test-date">Last taken: ${ts}</p>`;
+          html += `<div class="dash-test-metrics">`;
+          html += `<span>Avg RT: <strong>${m.avgReactionMs}ms</strong></span>`;
+          html += `<span>Misses: <strong>${m.misses}/${m.totalTrials || 16}</strong></span>`;
+          html += `<span>False Taps: <strong>${m.falseTaps}</strong></span>`;
+          html += `<span>RT Variability: <strong>${m.rtStdMs}ms</strong></span>`;
+          html += `</div>`;
+          html += `<p class="dash-test-signal">Signal contribution: <strong>${test.normalized_signal}/100</strong></p>`;
+          if (test.quality_flags && test.quality_flags.length) {
+            const flagLabels = {
+              high_misses: 'High number of misses',
+              high_false_taps: 'High number of false taps',
+              high_variability: 'High reaction time variability'
+            };
+            html += `<p class="dash-quality-flag">Quality note: ${test.quality_flags.map(f => flagLabels[f] || f).join(', ')}</p>`;
+          }
+        }
+
         html += `<div class="dash-test-actions">`;
         if (key === 'time_perception') {
           html += `<button class="btn btn-outline btn-sm" onclick="showScreen('screen-tp-results')">View Details</button>`;
           html += `<button class="btn btn-outline btn-sm" onclick="TP.init()">Retake</button>`;
+        }
+        if (key === 'reaction_time') {
+          html += `<button class="btn btn-outline btn-sm" onclick="showScreen('screen-rt-results')">View Details</button>`;
+          html += `<button class="btn btn-outline btn-sm" onclick="RT.startTest()">Retake</button>`;
         }
         html += `</div>`;
       } else {
@@ -161,8 +187,9 @@ const DASH = {
         html += `<div class="dash-test-actions">`;
         if (key === 'time_perception') {
           html += `<button class="btn btn-primary btn-sm" onclick="showScreen('screen-tp-intro')">Start Test</button>`;
-        } else {
-          html += `<button class="btn btn-outline btn-sm" disabled>Coming Soon</button>`;
+        }
+        if (key === 'reaction_time') {
+          html += `<button class="btn btn-primary btn-sm" onclick="showScreen('screen-rt-intro')">Start Test</button>`;
         }
         html += `</div>`;
       }
