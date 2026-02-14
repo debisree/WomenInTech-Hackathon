@@ -126,10 +126,9 @@ app.get('/api/dashboard', (req, res) => {
     tests.time_perception = { completed: false };
   }
 
-  tests.screener = { completed: false };
   tests.reaction_time = { completed: false };
 
-  const weights = { screener: 0.50, reaction_time: 0.30, time_perception: 0.20 };
+  const weights = { reaction_time: 0.50, time_perception: 0.50 };
   let totalWeight = 0;
   let weightedSum = 0;
   let completedCount = 0;
@@ -155,8 +154,8 @@ app.get('/api/dashboard', (req, res) => {
     else bucket = 'higher';
   }
 
-  if (completedCount >= 3 && qualityFlags.length === 0) confidence = 'high';
-  else if (completedCount >= 2) confidence = 'medium';
+  if (completedCount >= 2 && qualityFlags.length === 0) confidence = 'high';
+  else if (completedCount >= 1) confidence = 'medium';
   else confidence = 'low';
 
   const history = user.dashboardHistory || [];
@@ -166,7 +165,7 @@ app.get('/api/dashboard', (req, res) => {
     bucket,
     confidence,
     completedCount,
-    totalTests: 3,
+    totalTests: 2,
     tests,
     weights,
     qualityFlags,

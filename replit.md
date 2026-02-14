@@ -55,10 +55,10 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 ## Dashboard
 - **Composite Signal Score (0-100)**: Higher = stronger ADHD-like signal
 - **Signal direction**: time_signal = 100 - time_control_score (inverted so worse time control = higher signal)
-- **Weights**: Screener 50%, Reaction Time 30%, Time Perception 20%
-- **Missing tests**: Weights redistributed proportionally; confidence lowered
+- **Weights**: Reaction Time 50%, Time Perception 50%
+- **Missing tests**: Weight redistributed to completed test; confidence lowered
 - **Recommendation buckets**: Lower (0-34), Mixed/Inconclusive (35-64), Higher (65-100)
-- **Confidence levels**: High (3 tests, no flags), Medium (2 tests), Low (1 test or quality flags)
+- **Confidence levels**: High (2 tests, no flags), Medium (1 test), Low (0 tests)
 - **Test cards**: Show completion status, key metrics, signal contribution, view/retake buttons
 - **Context notes**: Flags poor sleep, high caffeine, low focus from status data
 - **Safety**: Prominent disclaimers, non-diagnostic language, clinician referral nudges

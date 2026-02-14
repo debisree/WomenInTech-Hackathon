@@ -1,6 +1,5 @@
 const DASH = {
   testLabels: {
-    screener: { name: 'ADHD Screener', desc: 'Self-report questionnaire based on common ADHD indicators.', badge: 'Questionnaire' },
     reaction_time: { name: 'Reaction Time Test', desc: 'Measures response speed, variability, and attention lapses.', badge: 'Attention' },
     time_perception: { name: 'Time Perception Challenge', desc: 'Estimate time intervals to measure internal clock consistency.', badge: 'Time Sense' }
   },
@@ -20,9 +19,9 @@ const DASH = {
   },
 
   confidenceLabels: {
-    high: 'High confidence — all tests completed, no quality issues',
-    medium: 'Medium confidence — some tests completed',
-    low: 'Low confidence — limited data available'
+    high: 'High confidence — both tests completed, no quality issues',
+    medium: 'Medium confidence — one test completed',
+    low: 'Low confidence — no tests completed yet'
   },
 
   async load() {
@@ -72,8 +71,8 @@ const DASH = {
     }
     section.style.display = '';
 
-    const testOrder = ['screener', 'reaction_time', 'time_perception'];
-    const weightLabels = { screener: 'Screener (50%)', reaction_time: 'Reaction (30%)', time_perception: 'Time (20%)' };
+    const testOrder = ['reaction_time', 'time_perception'];
+    const weightLabels = { reaction_time: 'Reaction (50%)', time_perception: 'Time (50%)' };
 
     let completed = [];
     let missing = [];
@@ -121,7 +120,7 @@ const DASH = {
 
   renderTestCards(data) {
     const container = document.getElementById('dash-test-cards');
-    const testOrder = ['time_perception', 'screener', 'reaction_time'];
+    const testOrder = ['time_perception', 'reaction_time'];
 
     let html = '';
     testOrder.forEach(key => {
