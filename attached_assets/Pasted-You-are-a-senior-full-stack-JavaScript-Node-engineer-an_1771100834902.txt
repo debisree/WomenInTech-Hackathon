@@ -1,0 +1,199 @@
+You are a senior full-stack JavaScript/Node engineer and an AI product consultant. You are working inside an existing Replit project for “Focus Forge”. The app is now **JavaScript + Node.js** (not Python/Streamlit).
+
+## Task
+
+Implement a fully functioning **Reaction Test** feature (Go/No-Go attention task) end-to-end: frontend UI logic, backend session storage, metrics calculation, and integration with the app’s existing gating + results flow.
+
+Assume:
+
+* The project already has a “Reaction Test” page/route where the user can click **Begin Test**.
+* The app has a Results page/route that will later show **Score + Insights + 10-min micro-plan**.
+* Users can proceed as guest or signed up (session-based), but do NOT add real auth providers.
+
+### Deliverables
+
+1. Implement the complete Reaction Test page feature (UI + logic).
+2. Implement backend endpoints/services for starting a test, fetching the current trial stimulus, submitting a tap, and finalizing results.
+3. Ensure gating: Reaction Test is locked until Time Test completed (assume session flag `timeTestDone=true` exists).
+4. Store computed metrics in the user session (or in-memory store keyed by session/user id).
+5. Provide full code for any changed/new files and the folder structure.
+
+---
+
+## Reaction Test Spec (CPT-inspired Go/No-Go)
+
+* Total trials: `N_TRIALS = 16`
+* Mix: ~70% GO (“TAP”), ~30% NO-GO (“WAIT”), pre-generated at start and stored in session/store
+* Response window per trial: `TIMEOUT_MS = 1200`
+
+### Rules
+
+* GO trial:
+
+  * Tap within window → record reaction time (ms)
+  * No tap by timeout → increment **misses**
+* NO-GO trial:
+
+  * Tap → increment **falseTaps**
+  * No tap by timeout → correct inhibition
+
+### Outputs (save in session/store)
+
+On completion, compute:
+
+* `reactionTestDone = true`
+* `avgReactionMs` (integer)
+* `misses` (integer)
+* `falseTaps` (integer)
+  Optional:
+* `rtStdMs` (integer)
+* `goCount`, `nogoCount`
+  Also store:
+* `reactionSummary` string: “Avg RT: ___ms | Misses: __ | False taps: __”
+
+---
+
+## Backend Requirements (Node.js)
+
+Use Express (or the project’s existing server framework). Implement these endpoints:
+
+### 1) POST `/api/reaction/start`
+
+* Gating: if `!session.timeTestDone` return 403 with message
+* Create a reaction test session object:
+
+  * `trialIndex=0`, `trials=[...]`, `trialStartTs=Date.now()`, `done=false`
+  * `reactionTimes=[]`, `misses=0`, `falseTaps=0`
+* Return the first stimulus + metadata:
+
+  * `{ stimulus: "GO"|"NOGO", trialIndex, totalTrials, timeoutMs }`
+
+### 2) GET `/api/reaction/state`
+
+* Return current trial state if active:
+
+  * `{ started, done, stimulus, trialIndex, totalTrials, timeLeftMs }`
+* If done, return metrics summary too.
+
+### 3) POST `/api/reaction/tap`
+
+Body: `{ clientTs?: number }` (optional)
+Server should:
+
+* Compute elapsed = `Date.now() - trialStartTs`
+* If already advanced/locked for this trial, ignore duplicate taps (debounce using a per-trial `locked` flag)
+* Apply rule based on stimulus:
+
+  * GO: if elapsed <= TIMEOUT_MS → push RT; else increment misses (still advance)
+  * NOGO: increment falseTaps (advance)
+* Advance to next trial:
+
+  * `trialIndex++`
+  * set `trialStartTs = Date.now()`
+  * if end: finalize metrics + set `reactionTestDone=true`
+    Return:
+* If ongoing: next stimulus payload
+* If completed: final metrics payload
+
+### 4) POST `/api/reaction/timeout`
+
+Triggered by client when timer expires (or server can infer on state polling).
+Server:
+
+* If stimulus is GO and no tap recorded for this trial → misses++
+* Advance to next trial or finalize
+
+### Data model (session/store)
+
+Store under `session.reaction` or an in-memory map keyed by `sessionID`:
+
+```js
+{
+  started: true,
+  done: false,
+  trialIndex: 0,
+  trials: ["GO","NOGO",...],
+  trialStartTs: 1710000000000,
+  locked: false,              // prevent multi-tap per trial
+  reactionTimes: [520, 610],
+  misses: 2,
+  falseTaps: 1
+}
+```
+
+### Finalize logic
+
+* `avgReactionMs = Math.round(mean(reactionTimes)) || 0`
+* `rtStdMs = Math.round(std(reactionTimes)) || 0`
+* Store to session:
+
+  * `session.avgReactionMs`, `session.misses`, `session.falseTaps`, `session.reactionTestDone=true`
+
+---
+
+## Frontend Requirements (JavaScript)
+
+Implement the Reaction Test page with:
+
+* Instructions + disclaimer (“Not diagnostic”)
+* A large prompt area:
+
+  * GO: “✅ TAP”
+  * NOGO: “🚫 WAIT”
+* One big button “TAP”
+* Countdown timer bar (1200ms)
+* Progress indicator: `Trial X / N` + progress bar
+* Begin Test button starts test (calls `/api/reaction/start`)
+* On each trial:
+
+  * Start a countdown timer (client-side)
+  * If user taps: POST `/api/reaction/tap`, then render next stimulus
+  * If timer hits 0 and no tap: POST `/api/reaction/timeout`, then render next stimulus
+* Debounce locally too: disable TAP button after one press until next stimulus arrives
+* On completion:
+
+  * Show summary metrics
+  * Button: “Go to Results”
+  * Button: “Re-run Reaction Test” (calls a reset endpoint or `/api/reaction/start` again)
+
+### Implementation notes
+
+* Use `fetch` for API calls.
+* Use `setInterval`/`setTimeout` for the per-trial timer.
+* Clear timers on unmount/navigation to avoid leaks.
+* Keep state in the page component:
+
+  * `stimulus`, `trialIndex`, `totalTrials`, `timeLeftMs`, `done`, `metrics`
+
+---
+
+## Reset Endpoint (optional but recommended)
+
+Add:
+
+* POST `/api/reaction/reset` → clears session.reaction and metrics fields related to reaction test.
+
+---
+
+## Integration & Gating
+
+* If backend returns 403 due to missing `timeTestDone`, frontend should show:
+
+  * “Please complete the Time Test first” + link to Test Overview/Time Test.
+* Ensure Results route already gates on `reactionTestDone`; do not change Results unless needed.
+
+---
+
+## Deliverables Output
+
+Return:
+
+1. Updated folder structure
+2. Full code for:
+
+* Backend: server routes/controllers/services you added or modified
+* Frontend: Reaction Test page component and any small shared utilities
+* Any session/store helper file
+
+Do NOT add databases, external auth, or complex UI libraries unless already present.
+Implement it cleanly, stable for live demo, and fully runnable in Replit.
