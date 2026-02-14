@@ -250,10 +250,11 @@
           <div class="test-card" id="test-1-card">
             <div class="test-info">
               <div class="test-badge">Test 1</div>
-              <h3>Coming Soon</h3>
-              <p>This test will be available shortly.</p>
+              <h3>Time Perception Challenge</h3>
+              <p>Estimate time intervals to measure your internal clock consistency.</p>
+              <p class="test-status" id="test1-status"></p>
             </div>
-            <button class="btn btn-outline" disabled>Not Available</button>
+            <button class="btn btn-primary" id="start-test-1">Start Test</button>
           </div>
           <div class="test-card" id="test-2-card">
             <div class="test-info">
@@ -267,8 +268,98 @@
       </div>
     </div>
 
+    <div id="screen-tp-intro" class="screen">
+      <div class="card tp-card">
+        <h1>Time Perception Challenge</h1>
+        <p class="tp-subtitle">This test measures how accurately you can estimate time intervals using your internal sense of time.</p>
+        <div class="tp-instructions">
+          <div class="tp-instruction-item">
+            <strong>How it works:</strong>
+            <p>You will see a target time (e.g., "12 seconds"). Press START, wait until you think that amount of time has passed, then press STOP.</p>
+          </div>
+          <div class="tp-instruction-item">
+            <strong>Important rules:</strong>
+            <ul>
+              <li>Do NOT count in your head (e.g., "one-Mississippi...")</li>
+              <li>Do NOT use any external timers, clocks, or watches</li>
+              <li>Just rely on your gut feeling of how long the time is</li>
+            </ul>
+          </div>
+          <div class="tp-instruction-item">
+            <strong>Test structure:</strong>
+            <p>2 practice trials (not scored) followed by 8 scored trials. No feedback is given between trials.</p>
+          </div>
+        </div>
+        <div class="tp-disclaimer">
+          This is not a diagnosis. Results may be influenced by sleep, stress, caffeine, or medications. Consider validated screeners and consult a clinician for professional assessment.
+        </div>
+        <button id="tp-begin" class="btn btn-primary btn-full">Begin Test</button>
+      </div>
+    </div>
+
+    <div id="screen-tp-trial" class="screen">
+      <div class="card tp-trial-card">
+        <div class="tp-progress">
+          <span id="tp-trial-label">Practice 1 of 2</span>
+          <div class="tp-progress-bar">
+            <div class="tp-progress-fill" id="tp-progress-fill"></div>
+          </div>
+        </div>
+        <div class="tp-target">
+          <span>Target Time</span>
+          <div class="tp-target-time" id="tp-target-time">12 seconds</div>
+        </div>
+        <div class="tp-status" id="tp-status">Press START when ready</div>
+        <div class="tp-buttons">
+          <button id="tp-start-btn" class="btn btn-primary tp-action-btn">START</button>
+          <button id="tp-stop-btn" class="btn btn-primary tp-action-btn tp-stop" disabled>STOP</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-tp-results" class="screen">
+      <div class="card tp-results-card">
+        <h1>Your Results</h1>
+        <div class="tp-score-circle" id="tp-score-circle">
+          <span class="tp-score-num" id="tp-score-num">--</span>
+          <span class="tp-score-label">Time Control Score</span>
+        </div>
+        <div class="tp-category" id="tp-category">--</div>
+        <div class="tp-metrics">
+          <div class="tp-metric">
+            <span class="tp-metric-label">Mean Absolute Error</span>
+            <span class="tp-metric-value" id="tp-mae">--</span>
+          </div>
+          <div class="tp-metric">
+            <span class="tp-metric-label">Error Variability</span>
+            <span class="tp-metric-value" id="tp-variability">--</span>
+          </div>
+          <div class="tp-metric">
+            <span class="tp-metric-label">Bias</span>
+            <span class="tp-metric-value" id="tp-bias">--</span>
+          </div>
+        </div>
+        <div class="tp-table-wrap">
+          <table class="tp-table" id="tp-results-table">
+            <thead>
+              <tr><th>#</th><th>Target (s)</th><th>Your Time (s)</th><th>Abs Error (s)</th></tr>
+            </thead>
+            <tbody id="tp-results-tbody"></tbody>
+          </table>
+        </div>
+        <div class="tp-disclaimer">
+          This is not a diagnosis. Results may be influenced by sleep, stress, caffeine, or medications. Consider validated screeners and consult a clinician for professional assessment.
+        </div>
+        <div class="tp-result-actions">
+          <button id="tp-retake" class="btn btn-outline">Retake Test</button>
+          <button id="tp-back-tests" class="btn btn-primary">Back to Tests</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script src="app.js"></script>
+  <script src="time-perception.js"></script>
 </body>
 </html>

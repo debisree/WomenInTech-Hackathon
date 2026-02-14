@@ -46,6 +46,18 @@ app.get('/api/user', (req, res) => {
   res.json({ user: req.session.user });
 });
 
+app.post('/api/test-results/time-perception', (req, res) => {
+  if (!req.session.user) return res.status(401).json({ message: 'Not logged in' });
+  req.session.user.timePerceptionResult = req.body;
+  res.json({ success: true });
+});
+
+app.get('/api/test-results/time-perception', (req, res) => {
+  if (!req.session.user) return res.status(401).json({ message: 'Not logged in' });
+  if (!req.session.user.timePerceptionResult) return res.status(404).json({ message: 'No results' });
+  res.json({ result: req.session.user.timePerceptionResult });
+});
+
 app.post('/api/logout', (req, res) => {
   req.session.destroy();
   res.json({ success: true });

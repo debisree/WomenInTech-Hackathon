@@ -1,0 +1,59 @@
+You are a senior full-stack engineer. I already have an app structure in this Replit project. Your task is to IMPLEMENT a new feature called “Time Perception Challenge” as an ADHD screening signal (NOT a diagnosis).
+
+IMPORTANT RULES:
+- Do NOT change unrelated parts of the app. Keep edits minimal and localized.
+- Use the existing routing/navigation patterns in this repo.
+- Add a new page/screen/component and wire it into the UI where tests are listed.
+- Use high-precision timing: performance.now() (web) / high-resolution timer available in the stack.
+- No per-trial feedback; only show results at the end.
+- Include a clear disclaimer: “Not a diagnosis; influenced by sleep, stress, caffeine, meds; consider validated screeners + clinician.”
+
+FEATURE SPEC (Time Estimation Task):
+1) User sees instructions:
+   - “Press START, then press STOP when you think the target time has passed.”
+   - “Do NOT count; do NOT use external timers.”
+   - “2 practice trials not scored.”
+2) Trials:
+   - Practice: 2 trials at 6s and 12s (not scored).
+   - Scored: 8 trials with randomized targets from [6s, 8s, 10s, 12s, 15s, 20s] (no immediate reveal).
+   - Randomize order; prevent two identical targets back-to-back if possible.
+3) Each trial UI:
+   - Shows target time (e.g., “Target: 12 seconds”)
+   - START button → begins timing and disables START
+   - STOP button → ends timing
+   - After STOP: auto-advance to next trial after 800ms with a neutral “Recorded” state (do not show accuracy).
+4) Data capture per trial:
+   - target_ms, actual_ms, error_ms (actual-target), abs_error_ms
+   - trial_index, is_practice
+   - start_timestamp, end_timestamp
+5) Scoring:
+   - Use ONLY scored trials.
+   - Compute:
+     a) Mean Absolute Error (MAE) in ms
+     b) Error Variability = std dev of error_ms
+     c) Bias = mean(error_ms) (positive = overestimate, negative = underestimate)
+   - Create “Time Control Score” 0–100 (higher is better):
+     - Normalize MAE and Variability against reasonable caps (e.g., cap MAE at 6000ms, cap std at 6000ms)
+     - Score = 100 - (0.55*norm_MAE + 0.45*norm_STD)*100
+     - Clamp to [0,100]
+   - Category label (non-medical):
+     - 80–100: “Typical timing consistency”
+     - 60–79: “Mild inconsistency”
+     - 40–59: “Moderate inconsistency”
+     - 0–39: “High inconsistency”
+6) Results screen:
+   - Show Time Control Score, category, and the three metrics (MAE, Variability, Bias)
+   - Show a simple table of scored trials: target(s), actual(s), abs error(s)
+   - Provide a “Retake test” button (new randomized trials)
+   - Provide a “Back to tests” button
+7) Persistence:
+   - Save the latest result object locally (localStorage or existing persistence layer in this repo).
+   - If the app has a user/session concept already, store under that user key; otherwise store a single “latest_time_perception_result”.
+
+DELIVERABLES:
+- Implement the new page/component + minimal styling consistent with the app.
+- Add/modify routes/navigation so the user can start the test.
+- Ensure the code runs without errors.
+- After implementation, print a short “What I changed” summary listing files touched and where to click in the UI to run the test.
+
+Start by scanning the repo to detect the framework (React/Next/Vite, Flask templates, etc.) and follow the existing patterns.
