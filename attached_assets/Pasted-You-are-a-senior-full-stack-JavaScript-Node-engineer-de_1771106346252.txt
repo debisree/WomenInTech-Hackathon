@@ -1,0 +1,126 @@
+You are a senior full-stack JavaScript/Node engineer debugging an existing Reaction Time (Go/No-Go) feature in a Replit project (Focus Forge). The Reaction Test currently has these bugs:
+
+1. The user sometimes cannot click the **TAP** button (clicks are ignored / button disabled / overlay blocks clicks).
+2. Reaction time is being calculated incorrectly (often near-zero, negative, or much larger than expected).
+
+## Task
+
+Fix the Reaction Test end-to-end so it is **clickable, accurate, and deterministic**.
+
+## Constraints
+
+* Keep the current architecture (same routes/pages/components). Do not rewrite the app from scratch.
+* Keep the same API route names if they already exist (e.g., `/api/reaction/start`, `/api/reaction/tap`, `/api/reaction/timeout`, `/api/reaction/state`, `/api/reaction/reset`).
+* Use session or in-memory store as already implemented.
+* No new heavy dependencies.
+
+---
+
+## A. Fix “TAP button not clickable”
+
+Investigate and fix these common causes:
+
+* A full-screen overlay or progress element has `position: absolute` and is capturing pointer events.
+* The TAP button is disabled and never re-enabled due to stale state.
+* Multiple timers overlap and keep UI locked.
+* CSS `z-index` stacking places stimulus overlay on top of the button.
+* Event handler not attached (wrong component, missing `onClick`, stale closure).
+
+### Requirements
+
+* Ensure the TAP button always has `pointer-events: auto;` and is visually on top:
+
+  * Put test UI in a single container with controlled layering.
+  * Any animated overlays must use `pointer-events: none;`.
+* Add a visual “pressed” feedback (scale/pulse) so we can see clicks register immediately.
+* Add robust local debounce:
+
+  * Allow exactly one tap per trial.
+  * Re-enable button when the next stimulus arrives.
+
+---
+
+## B. Fix Reaction Time calculation (make it correct)
+
+### Ground truth definition
+
+Reaction time (RT) per GO trial = `tapTimestamp - stimulusShownTimestamp`
+
+### Correct approach
+
+* Use a single source of truth for timestamps:
+
+  * Prefer server authoritative timing for scoring consistency.
+  * But ensure server uses the **same trial start** for elapsed computation.
+* Implement *both* (for debugging):
+
+  * Server elapsed = `Date.now() - trialStartTs`
+  * Client elapsed = `performance.now() - clientTrialStartPerf`
+    Return both in dev mode so we can compare.
+
+### Backend requirements
+
+* On `/api/reaction/start` and whenever a trial advances, set:
+
+  * `trialStartTs = Date.now()`
+  * `trialId = uuid` (or increment counter) to prevent double-processing
+  * `locked = false`
+* On `/api/reaction/tap`:
+
+  * If `locked` is true, return current state without modifying anything.
+  * Immediately set `locked = true`.
+  * Compute `elapsedMs = Date.now() - trialStartTs` (must be >= 0)
+  * If stimulus is GO:
+
+    * If `elapsedMs <= TIMEOUT_MS`: push `elapsedMs` into reactionTimes
+    * Else: count as miss (do not store RT)
+  * If stimulus is NOGO: increment falseTaps
+  * Advance trial and reset `locked=false` for next trial.
+* On `/api/reaction/timeout`:
+
+  * Only apply if not locked and the trial is still current.
+  * If GO and no tap recorded: misses++
+  * Advance trial
+* Always return the NEW state in response: `{ stimulus, trialIndex, totalTrials, done, timeoutMs }`
+* Add concise logs with trialIndex, stimulus, elapsedMs, locked.
+
+### Frontend requirements
+
+* Use `setTimeout` per trial (not setInterval).
+* When stimulus changes:
+
+  * Clear any existing timeout
+  * Set `tapEnabled = true`
+  * Record `stimulusShownAt = performance.now()` for client RT comparison
+  * Schedule timeout callback at `TIMEOUT_MS`
+* On TAP:
+
+  * Immediately disable button locally (`tapEnabled=false`)
+  * POST `/api/reaction/tap` with `{ clientElapsedMs }` where `clientElapsedMs = performance.now() - stimulusShownAt`
+  * Render next stimulus from server response
+* On timeout:
+
+  * If tap already occurred, do nothing.
+  * Otherwise call `/api/reaction/timeout`
+
+---
+
+## C. UX improvements (tiny, but important)
+
+* Show a small debug line (only when `?debug=1` in URL):
+
+  * stimulus, trialIndex, serverElapsedMs, clientElapsedMs
+* Show progress: Trial X/N
+* Ensure the page never “freezes” due to state mismatch; if server responds done, stop timers and show results.
+
+---
+
+## D. Deliverables
+
+Output the full code for all changed files (frontend + backend), including:
+
+* The Reaction Test page/component
+* Any CSS files affecting pointer events / z-index
+* The server route/controller/service implementing reaction logic
+
+Do not omit code. Ensure the fixes specifically address the two reported bugs: unclickable button and incorrect RT.

@@ -5,18 +5,15 @@ const RT = {
 
   stimulus: null,
   trialIndex: 0,
+  trialId: 0,
   totalTrials: 16,
   done: false,
-  locked: false,
-  timerInterval: null,
+  tapEnabled: false,
   timeoutTimer: null,
-  trialStartTime: null,
+  stimulusShownAt: null,
+  debugMode: new URLSearchParams(window.location.search).has('debug'),
 
   clearTimers() {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval);
-      this.timerInterval = null;
-    }
     if (this.timeoutTimer) {
       clearTimeout(this.timeoutTimer);
       this.timeoutTimer = null;
@@ -30,6 +27,10 @@ const RT = {
   async startTest() {
     this.clearTimers();
     this.streak = 0;
+    this.done = false;
+    this.tapEnabled = false;
+    this.stimulusShownAt = null;
+    this.updateDebug('Starting...');
     try {
       const res = await fetch('/api/reaction/start', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
       if (res.status === 403) {
@@ -43,8 +44,8 @@ const RT = {
       const data = await res.json();
       this.stimulus = data.stimulus;
       this.trialIndex = data.trialIndex;
+      this.trialId = data.trialId || 0;
       this.totalTrials = data.totalTrials;
-      this.done = false;
       showScreen('screen-rt-trial');
       this.presentStimulus();
     } catch (err) {
@@ -53,23 +54,22 @@ const RT = {
   },
 
   presentStimulus() {
+    if (this.done) return;
+
     const area = document.getElementById('rt-stimulus-area');
     const text = document.getElementById('rt-stimulus-text');
     const btn = document.getElementById('rt-tap-btn');
     const fill = document.getElementById('rt-timer-fill');
 
-    this.locked = false;
     this.updateProgress();
     this.updateStreakBadge();
 
     if (this.stimulus === 'GO') {
       area.className = 'rt-stimulus-area rt-go';
       text.textContent = 'TAP';
-      btn.disabled = false;
     } else {
       area.className = 'rt-stimulus-area rt-nogo';
       text.textContent = 'WAIT';
-      btn.disabled = false;
     }
 
     area.classList.add('rt-stimulus-enter');
@@ -81,12 +81,17 @@ const RT = {
     fill.style.transition = `width ${this.TIMEOUT_MS}ms linear`;
     fill.style.width = '0%';
 
-    this.trialStartTime = Date.now();
+    this.stimulusShownAt = performance.now();
+    this.tapEnabled = true;
+    btn.disabled = false;
 
+    this.clearTimers();
     this.timeoutTimer = setTimeout(() => this.handleTimeout(), this.TIMEOUT_MS);
 
     fetch('/api/reaction/stimulus-shown', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
       .catch(err => console.error('Error marking stimulus shown:', err));
+
+    this.updateDebug(`Trial ${this.trialIndex + 1}/${this.totalTrials} | ${this.stimulus} | Waiting...`);
   },
 
   showFeedback(type) {
@@ -95,11 +100,11 @@ const RT = {
 
     if (type === 'hit') {
       this.streak++;
-      toast.textContent = this.streak > 1 ? `+${this.streak} streak` : 'nice';
+      toast.textContent = this.streak > 1 ? `${this.streak}x streak` : 'nice';
       toast.className = 'rt-feedback-toast rt-fb-good rt-fb-show';
     } else if (type === 'correct') {
       this.streak++;
-      toast.textContent = this.streak > 1 ? `+${this.streak} streak` : 'correct';
+      toast.textContent = this.streak > 1 ? `${this.streak}x streak` : 'correct';
       toast.className = 'rt-feedback-toast rt-fb-good rt-fb-show';
     } else if (type === 'miss') {
       this.streak = 0;
@@ -115,7 +120,7 @@ const RT = {
 
     this.feedbackTimer = setTimeout(() => {
       toast.classList.remove('rt-fb-show');
-    }, 350);
+    }, 400);
   },
 
   updateStreakBadge() {
@@ -130,8 +135,8 @@ const RT = {
   },
 
   async handleTap() {
-    if (this.locked || this.done) return;
-    this.locked = true;
+    if (!this.tapEnabled || this.done) return;
+    this.tapEnabled = false;
     this.clearTimers();
 
     const btn = document.getElementById('rt-tap-btn');
@@ -140,6 +145,8 @@ const RT = {
     const area = document.getElementById('rt-stimulus-area');
     area.classList.add('rt-tap-pulse');
     setTimeout(() => area.classList.remove('rt-tap-pulse'), 150);
+
+    const clientElapsedMs = this.stimulusShownAt ? Math.round(performance.now() - this.stimulusShownAt) : null;
 
     if (this.stimulus === 'GO') {
       this.showFeedback('hit');
@@ -151,9 +158,11 @@ const RT = {
       const res = await fetch('/api/reaction/tap', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientTs: Date.now() })
+        body: JSON.stringify({ clientElapsedMs, trialId: this.trialId })
       });
       const data = await res.json();
+
+      this.updateDebug(`Trial ${this.trialIndex + 1} | ${this.stimulus} | clientRT=${clientElapsedMs}ms | serverRT=${data.serverElapsedMs || '?'}ms`);
 
       if (data.ignored) return;
 
@@ -164,17 +173,20 @@ const RT = {
 
       this.stimulus = data.stimulus;
       this.trialIndex = data.trialIndex;
+      this.trialId = data.trialId || 0;
       this.totalTrials = data.totalTrials;
 
-      setTimeout(() => this.presentStimulus(), 350);
+      setTimeout(() => this.presentStimulus(), 400);
     } catch (err) {
       console.error('Error submitting tap:', err);
+      this.tapEnabled = true;
+      btn.disabled = false;
     }
   },
 
   async handleTimeout() {
-    if (this.locked || this.done) return;
-    this.locked = true;
+    if (!this.tapEnabled || this.done) return;
+    this.tapEnabled = false;
     this.clearTimers();
 
     const btn = document.getElementById('rt-tap-btn');
@@ -186,10 +198,13 @@ const RT = {
       this.showFeedback('correct');
     }
 
+    this.updateDebug(`Trial ${this.trialIndex + 1} | ${this.stimulus} | TIMEOUT`);
+
     try {
       const res = await fetch('/api/reaction/timeout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ trialId: this.trialId })
       });
       const data = await res.json();
 
@@ -202,9 +217,10 @@ const RT = {
 
       this.stimulus = data.stimulus;
       this.trialIndex = data.trialIndex;
+      this.trialId = data.trialId || 0;
       this.totalTrials = data.totalTrials;
 
-      setTimeout(() => this.presentStimulus(), 350);
+      setTimeout(() => this.presentStimulus(), 400);
     } catch (err) {
       console.error('Error submitting timeout:', err);
     }
@@ -218,8 +234,17 @@ const RT = {
     fill.style.width = pct + '%';
   },
 
+  updateDebug(msg) {
+    const el = document.getElementById('rt-debug-line');
+    if (el && this.debugMode) {
+      el.style.display = 'block';
+      el.textContent = msg;
+    }
+  },
+
   showResults(metrics) {
     this.done = true;
+    this.tapEnabled = false;
     this.clearTimers();
 
     document.getElementById('rt-avg-rt').textContent = metrics.avgReactionMs + 'ms';
@@ -253,6 +278,11 @@ document.getElementById('rt-begin').addEventListener('click', () => {
 document.getElementById('rt-tap-btn').addEventListener('click', () => {
   RT.handleTap();
 });
+
+document.getElementById('rt-tap-btn').addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  RT.handleTap();
+}, { passive: false });
 
 document.getElementById('rt-retake').addEventListener('click', () => {
   RT.startTest();

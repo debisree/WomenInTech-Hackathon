@@ -1326,7 +1326,7 @@ body {
   text-align: center;
   padding: 1.5rem 2rem 2rem;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .rt-trial-header {
@@ -1382,6 +1382,9 @@ body {
   margin: 0 auto 1rem;
   background: #f0f0f0;
   transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
 }
 
 .rt-stimulus-area.rt-go {
@@ -1431,6 +1434,7 @@ body {
   transform: translateY(4px);
   transition: opacity 0.15s, transform 0.15s;
   user-select: none;
+  pointer-events: none;
 }
 
 .rt-feedback-toast.rt-fb-show {
@@ -1452,6 +1456,7 @@ body {
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 1.25rem;
+  pointer-events: none;
 }
 
 .rt-timer-fill {
@@ -1476,6 +1481,10 @@ body {
   transition: transform 0.1s, box-shadow 0.1s;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  touch-action: manipulation;
 }
 
 .rt-tap-btn:hover:not(:disabled) {
@@ -1547,4 +1556,14 @@ body {
     height: 52px;
     font-size: 1.1rem;
   }
+}
+
+.rt-debug-line {
+  margin-top: 0.75rem;
+  font-size: 0.7rem;
+  font-family: monospace;
+  color: #999;
+  background: #f0f0f0;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
 }

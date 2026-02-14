@@ -176,7 +176,8 @@ app.post('/api/reaction/start', (req, res) => {
     done: false,
     trialIndex: 0,
     trials,
-    trialStartTs: null,
+    trialStartTs: Date.now(),
+    trialId: 0,
     stimulusShown: false,
     locked: false,
     reactionTimes: [],
@@ -189,6 +190,7 @@ app.post('/api/reaction/start', (req, res) => {
   res.json({
     stimulus: trials[0],
     trialIndex: 0,
+    trialId: 0,
     totalTrials: N_TRIALS,
     timeoutMs: TIMEOUT_MS
   });
@@ -200,7 +202,6 @@ app.post('/api/reaction/stimulus-shown', (req, res) => {
   if (!reaction || !reaction.started || reaction.done) {
     return res.status(400).json({ message: 'No active reaction test' });
   }
-  reaction.trialStartTs = Date.now();
   reaction.stimulusShown = true;
   res.json({ success: true });
 });
@@ -245,18 +246,24 @@ app.post('/api/reaction/tap', (req, res) => {
     return res.json({ ignored: true, message: 'Trial already processed' });
   }
 
+  const { clientElapsedMs, trialId } = req.body;
+  if (typeof trialId === 'number' && trialId !== reaction.trialId) {
+    return res.json({ ignored: true, message: 'Stale trial' });
+  }
+
   reaction.locked = true;
   const stimulus = reaction.trials[reaction.trialIndex];
   let feedback = '';
-
-  if (!reaction.trialStartTs) {
-    reaction.trialStartTs = Date.now();
-    console.log('[reaction] tap | warning: trialStartTs was null, using fallback');
+  let serverElapsed = null;
+  if (reaction.trialStartTs) {
+    serverElapsed = Date.now() - reaction.trialStartTs;
   }
-  const elapsed = Date.now() - reaction.trialStartTs;
+  const hasClientMs = typeof clientElapsedMs === 'number' && clientElapsedMs >= 0;
+  const hasServerMs = serverElapsed !== null && serverElapsed >= 0;
+  const elapsed = hasClientMs ? clientElapsedMs : (hasServerMs ? serverElapsed : -1);
 
   if (stimulus === 'GO') {
-    if (elapsed <= TIMEOUT_MS) {
+    if (elapsed >= 0 && elapsed <= TIMEOUT_MS + 50) {
       reaction.reactionTimes.push(elapsed);
       feedback = 'hit';
     } else {
@@ -268,7 +275,7 @@ app.post('/api/reaction/tap', (req, res) => {
     feedback = 'false_tap';
   }
 
-  console.log(`[reaction] tap | trial=${reaction.trialIndex} stimulus=${stimulus} elapsed=${elapsed}ms feedback=${feedback}`);
+  console.log(`[reaction] tap | trial=${reaction.trialIndex} stimulus=${stimulus} clientMs=${clientElapsedMs} serverMs=${serverElapsed} used=${elapsed}ms feedback=${feedback}`);
 
   reaction.trialIndex++;
 
@@ -277,15 +284,19 @@ app.post('/api/reaction/tap', (req, res) => {
     return res.json(metrics);
   }
 
-  reaction.trialStartTs = null;
+  reaction.trialStartTs = Date.now();
+  reaction.trialId = reaction.trialIndex;
   reaction.stimulusShown = false;
   reaction.locked = false;
 
   res.json({
     stimulus: reaction.trials[reaction.trialIndex],
     trialIndex: reaction.trialIndex,
+    trialId: reaction.trialId,
     totalTrials: N_TRIALS,
-    timeoutMs: TIMEOUT_MS
+    timeoutMs: TIMEOUT_MS,
+    serverElapsedMs: serverElapsed,
+    clientElapsedMs: clientElapsedMs
   });
 });
 
@@ -297,6 +308,11 @@ app.post('/api/reaction/timeout', (req, res) => {
   }
   if (reaction.locked) {
     return res.json({ ignored: true, message: 'Trial already processed' });
+  }
+
+  const { trialId } = req.body || {};
+  if (typeof trialId === 'number' && trialId !== reaction.trialId) {
+    return res.json({ ignored: true, message: 'Stale trial' });
   }
 
   reaction.locked = true;
@@ -319,13 +335,15 @@ app.post('/api/reaction/timeout', (req, res) => {
     return res.json(metrics);
   }
 
-  reaction.trialStartTs = null;
+  reaction.trialStartTs = Date.now();
+  reaction.trialId = reaction.trialIndex;
   reaction.stimulusShown = false;
   reaction.locked = false;
 
   res.json({
     stimulus: reaction.trials[reaction.trialIndex],
     trialIndex: reaction.trialIndex,
+    trialId: reaction.trialId,
     totalTrials: N_TRIALS,
     timeoutMs: TIMEOUT_MS
   });
