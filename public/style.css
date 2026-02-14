@@ -6,7 +6,7 @@
 
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f5f0eb;
   min-height: 100vh;
 }
 
@@ -33,7 +33,7 @@ body {
 .nav-brand {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #667eea;
+  color: #5a7d6a;
 }
 
 .nav-links {
@@ -55,12 +55,12 @@ body {
 }
 
 .nav-btn:hover {
-  background: #f0f0ff;
-  color: #667eea;
+  background: #edf5f0;
+  color: #5a7d6a;
 }
 
 .nav-btn.active {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #5a7d6a;
   color: white;
 }
 
@@ -107,17 +107,12 @@ body {
   background: white;
   border-radius: 20px;
   padding: 2.5rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
 }
 
 .logo {
   text-align: center;
   margin-bottom: 2rem;
-}
-
-.logo-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
 }
 
 .logo h1 {
@@ -157,7 +152,7 @@ body {
 
 .form-group input[type="text"]:focus,
 .form-group input[type="password"]:focus {
-  border-color: #667eea;
+  border-color: #5a7d6a;
 }
 
 .btn {
@@ -176,23 +171,24 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #5a7d6a;
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(90, 125, 106, 0.3);
+  background: #4e6e5d;
 }
 
 .btn-outline {
   background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+  color: #5a7d6a;
+  border: 2px solid #5a7d6a;
 }
 
 .btn-outline:hover:not(:disabled) {
-  background: #f0f0ff;
+  background: #edf5f0;
 }
 
 .btn-full {
@@ -281,7 +277,7 @@ body {
 .step-num {
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #5a7d6a;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -371,7 +367,7 @@ body {
 .checkbox-label input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  accent-color: #667eea;
+  accent-color: #5a7d6a;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -396,8 +392,8 @@ body {
 }
 
 .radio-label:hover {
-  border-color: #b0b8e8;
-  background: #f7f8fc;
+  border-color: #a3c4b1;
+  background: #f5faf7;
 }
 
 .radio-label input[type="radio"] {
@@ -409,8 +405,8 @@ body {
 }
 
 .radio-label:has(input:checked) {
-  border-color: #667eea;
-  background: #f0f0ff;
+  border-color: #5a7d6a;
+  background: #edf5f0;
   color: #333;
   font-weight: 500;
 }
@@ -445,7 +441,7 @@ body {
 
 .test-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #5a7d6a;
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -529,7 +525,7 @@ body {
 .test-status {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #667eea;
+  color: #5a7d6a;
   margin-top: 0.35rem;
   display: none;
 }
@@ -619,7 +615,7 @@ body {
 
 .tp-progress-fill {
   height: 100%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #5a7d6a;
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -650,7 +646,7 @@ body {
 }
 
 .tp-status.tp-timing {
-  color: #667eea;
+  color: #5a7d6a;
   font-weight: 500;
 }
 
