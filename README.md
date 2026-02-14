@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 ADHDecode
+# ADHDecode
 
 ### *Intelligent Adult ADHD Likelihood Screening Platform*
 
