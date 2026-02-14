@@ -1,0 +1,163 @@
+You are an expert Python + Streamlit engineer building a hackathon MVP inside Replit.
+
+Build a clean **Streamlit multi-page app scaffold** for an ADHD self-reflection tool called **Focus Forge**. Use **Python + Streamlit** only. Do NOT implement the actual tests yet—create placeholder pages with stub completion buttons and dummy metrics that we will replace later.
+
+## Hard requirements (Replit + Streamlit)
+
+* Use Streamlit’s multipage structure with a `/pages` folder (preferred for clarity in Replit).
+* Use only these libraries: `streamlit`, `pandas`, `plotly` (optional), and Python standard library.
+* All user data is **session-only** (use `st.session_state`). No real auth, no DB.
+* Enforce gating: user **cannot access Results** until both tests are completed.
+
+## App pages (exact flow + gating)
+
+### Page 1: Welcome (Sign-in / Guest)
+
+File: `pages/01_Welcome.py`
+UI:
+
+* App title + 1-line purpose
+* Disclaimer (visible): “Not a medical diagnosis. For self-reflection only.”
+* Two options:
+
+  1. **Continue as Guest** (one click)
+  2. **Sign up** form with:
+
+     * `display_name` (required)
+     * `email` (optional; no validation beyond “contains @” if provided)
+       Behavior:
+* On Guest: set `auth_mode="guest"`, `display_name="Guest"`, `user_id` (random uuid), then navigate to Test Overview.
+* On Sign up: set `auth_mode="signup"`, store name/email, set `user_id` uuid, then navigate to Test Overview.
+
+Session keys to initialize (if missing):
+
+* `auth_mode`, `display_name`, `email`, `user_id`
+* `time_test_done` (bool), `reaction_test_done` (bool)
+* `time_error_sec` (float), `avg_reaction_ms` (int), `misses` (int)
+* `score` (int), `label` (str), `insights` (list[str]), `coach_text` (str)
+
+### Page 2: Test Overview (must explain sequence)
+
+File: `pages/02_Test_Overview.py`
+UI:
+
+* Explain: user must complete **two tests in order** to unlock results:
+
+  1. Time Perception Test
+  2. Reaction (Attention) Test
+* Show progress:
+
+  * Step 1/2: Time test status
+  * Step 2/2: Reaction test status
+* Buttons:
+
+  * “Start / Continue Tests” routes:
+
+    * If time not done → Time Test page
+    * Else if reaction not done → Reaction Test page
+    * Else → Results page
+* If user is not “authenticated” (no `auth_mode`), show warning and link back to Welcome.
+
+### Page 3: Time Test (placeholder only)
+
+File: `pages/03_Time_Test.py`
+UI:
+
+* Brief instructions + “Begin” (no real timer yet)
+* One primary button: **“Mark Time Test Complete (stub)”**
+  Behavior:
+* On click:
+
+  * `time_test_done = True`
+  * `time_error_sec = 3.2` (dummy)
+  * Auto-route to Reaction Test page
+* Prevent access if user not authenticated (send back to Welcome)
+
+### Page 4: Reaction Test (placeholder only)
+
+File: `pages/04_Reaction_Test.py`
+UI:
+
+* Brief instructions + placeholder
+* One primary button: **“Mark Reaction Test Complete (stub)”**
+  Behavior:
+* On click:
+
+  * `reaction_test_done = True`
+  * `avg_reaction_ms = 610` (dummy)
+  * `misses = 2` (dummy)
+  * Auto-route to Results page
+* Prevent access if Time Test isn’t done (send to Test Overview)
+
+### Page 5: Results / Dashboard (gated)
+
+File: `pages/05_Results.py`
+Gating:
+
+* If both tests not complete, show warning + link to Test Overview, and do not show results.
+  UI:
+* “Cognitive Snapshot” section:
+
+  * Score (computed via stub scoring module; default expected ~72)
+  * Label (from scoring module)
+  * 2–3 insight bullets (from scoring module)
+* Charts:
+
+  * Simple Plotly bar chart or Streamlit chart using dummy normalized signals derived from the dummy metrics
+* Coaching:
+
+  * Button: “Generate 10-min Micro-Plan”
+  * Calls `coach.generate_micro_plan(...)` (stub) and displays/store in `st.session_state.coach_text`
+* Buttons:
+
+  * “Re-run Snapshot” resets only test + result fields (keeps user identity) and routes to Test Overview
+  * “Reset Session” clears all session state and routes to Welcome
+
+## Shared modules (create these files)
+
+### `constants.py`
+
+* App name, disclaimers, test names, labels, routing helper strings.
+
+### `scoring.py`
+
+Function:
+
+* `compute_score(time_error_sec: float, avg_reaction_ms: int, misses: int) -> tuple[int, str, list[str]]`
+  Implementation (stub but deterministic):
+* Return a stable score (e.g., 72) for the dummy inputs and produce:
+
+  * label: e.g., “Moderate Time Blindness + Mild Distractibility”
+  * insights: 2–3 bullet strings referencing the metrics
+
+### `coach.py`
+
+Function:
+
+* `generate_micro_plan(score: int, label: str, insights: list[str], context: str = "Work") -> str`
+  Implementation:
+* Return a 10-minute plan: 3 numbered steps + 1 coping technique + 1 affirmation + a safety note (“not medical advice”).
+
+## Navigation notes (important)
+
+* Prefer Streamlit’s `st.switch_page("pages/XX_Page.py")` for navigation.
+* Provide a small `init_session_state()` helper used by every page to avoid KeyErrors.
+
+## Deliverables
+
+Return:
+
+1. The final folder/file structure
+2. Full code for each file:
+
+   * `app.py` (optional landing; may just redirect to Welcome)
+   * `pages/01_Welcome.py`
+   * `pages/02_Test_Overview.py`
+   * `pages/03_Time_Test.py`
+   * `pages/04_Reaction_Test.py`
+   * `pages/05_Results.py`
+   * `constants.py`
+   * `scoring.py`
+   * `coach.py`
+
+Do NOT add databases, external auth, or real test logic yet. Keep it minimal, clean, and runnable on Replit.
