@@ -1,0 +1,60 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f8f9fa;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  background: linear-gradient(135deg, #6b46c1, #d53f8c);
+  color: white;
+  width: 100%;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+main {
+  max-width: 800px;
+  width: 100%;
+  padding: 2rem;
+}
+
+.hero {
+  background: white;
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: 2rem;
+}
+
+.hero h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #6b46c1;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555;
+}
