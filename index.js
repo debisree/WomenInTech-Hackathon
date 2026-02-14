@@ -46,6 +46,13 @@ app.get('/api/user', (req, res) => {
   res.json({ user: req.session.user });
 });
 
+app.post('/api/status', (req, res) => {
+  if (!req.session.user) return res.status(401).json({ message: 'Not logged in' });
+  const { sleepQuality, caffeineIntake, focusLevel, loseTrackOfTime } = req.body;
+  req.session.user.status = { sleepQuality, caffeineIntake, focusLevel, loseTrackOfTime };
+  res.json({ success: true });
+});
+
 app.post('/api/test-results/time-perception', (req, res) => {
   if (!req.session.user) return res.status(401).json({ message: 'Not logged in' });
   req.session.user.timePerceptionResult = req.body;

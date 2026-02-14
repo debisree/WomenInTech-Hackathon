@@ -1,7 +1,7 @@
-# ADHD Screening Test App
+# ADHDecode
 
 ## Overview
-An ADHD screening test application that guides users through a multi-step flow: login, consent, demographics collection, and screening tests including a Time Perception Challenge.
+An ADHD likelihood analysis application (ADHDecode) that guides users through a multi-step flow: login, consent, demographics collection, current status assessment, and screening tests including a Time Perception Challenge.
 
 ## Project Architecture
 - **Runtime**: Node.js 20
@@ -27,7 +27,8 @@ An ADHD screening test application that guides users through a multi-step flow: 
 2. **Welcome** - Greeting screen with user's name and steps overview (shows completion status)
 3. **Consent** - One-time agreement (18+, not medical diagnosis). Skipped if already consented.
 4. **Demographics** - Gender, age group, ethnicity, ADHD diagnosis history. Editable anytime via nav.
-5. **Tests** - Time Perception Challenge (Test 1) + Test 2 (TBD)
+5. **Current Status** - Sleep quality, caffeine intake, focus level (1-5), lose-track-of-time frequency. Editable anytime via nav.
+6. **Tests** - Time Perception Challenge (Test 1) + Test 2 (TBD)
 
 ## Test 1: Time Perception Challenge
 - **Flow**: Intro screen with instructions → 2 practice trials (6s, 12s, not scored) → 8 scored trials (randomized from pool [6,8,10,12,15,20s], no back-to-back duplicates) → Results screen
@@ -43,7 +44,7 @@ An ADHD screening test application that guides users through a multi-step flow: 
 - **Persistence**: Results saved to session via API, restored on session reload
 
 ## Navigation
-- Top nav bar (Home, My Info, Tests, Logout) appears after login
+- Top nav bar (Home, My Info, Status, Tests, Logout) appears after login
 - Users can navigate to any section at any time
 - My Info page pre-populates with saved data for editing
 
@@ -53,6 +54,7 @@ An ADHD screening test application that guides users through a multi-step flow: 
 - `POST /api/demographics` - Save demographics data (gender, ageGroup, ethnicity, adhdDiagnosed)
 - `GET /api/user` - Get current user info (also used for session restoration)
 - `POST /api/logout` - End session
+- `POST /api/status` - Save current status data (sleepQuality, caffeineIntake, focusLevel, loseTrackOfTime)
 - `POST /api/test-results/time-perception` - Save time perception test results
 - `GET /api/test-results/time-perception` - Get previous time perception results
 

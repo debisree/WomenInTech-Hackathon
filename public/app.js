@@ -21,6 +21,7 @@ function showScreen(screenId) {
 function updateWelcomeSteps() {
   const consentStatus = document.getElementById('step-consent-status');
   const infoStatus = document.getElementById('step-info-status');
+  const statusStatus = document.getElementById('step-status-status');
 
   if (currentUser && currentUser.consentGiven) {
     consentStatus.textContent = 'Done';
@@ -36,6 +37,14 @@ function updateWelcomeSteps() {
   } else {
     infoStatus.textContent = '';
     infoStatus.classList.remove('done');
+  }
+
+  if (currentUser && currentUser.status) {
+    statusStatus.textContent = 'Done';
+    statusStatus.classList.add('done');
+  } else {
+    statusStatus.textContent = '';
+    statusStatus.classList.remove('done');
   }
 }
 
@@ -63,6 +72,30 @@ function checkDemoFormComplete() {
   document.getElementById('demo-submit').disabled = !(gender && ageGroup && ethnicity && adhdDiagnosed);
 }
 
+function populateStatusForm() {
+  if (!currentUser || !currentUser.status) return;
+  const s = currentUser.status;
+  const form = document.getElementById('status-form');
+
+  ['sleepQuality', 'caffeineIntake', 'focusLevel', 'loseTrackOfTime'].forEach(field => {
+    if (s[field]) {
+      const radio = form.querySelector(`input[name="${field}"][value="${s[field]}"]`);
+      if (radio) radio.checked = true;
+    }
+  });
+
+  checkStatusFormComplete();
+}
+
+function checkStatusFormComplete() {
+  const form = document.getElementById('status-form');
+  const sleepQuality = form.querySelector('input[name="sleepQuality"]:checked');
+  const caffeineIntake = form.querySelector('input[name="caffeineIntake"]:checked');
+  const focusLevel = form.querySelector('input[name="focusLevel"]:checked');
+  const loseTrackOfTime = form.querySelector('input[name="loseTrackOfTime"]:checked');
+  document.getElementById('status-submit').disabled = !(sleepQuality && caffeineIntake && focusLevel && loseTrackOfTime);
+}
+
 async function checkSession() {
   try {
     const res = await fetch('/api/user');
@@ -72,8 +105,11 @@ async function checkSession() {
       document.getElementById('welcome-name').textContent = currentUser.name;
       updateWelcomeSteps();
       populateDemographicsForm();
-      if (currentUser.demographics) {
+      populateStatusForm();
+      if (currentUser.status) {
         showScreen('screen-tests');
+      } else if (currentUser.demographics) {
+        showScreen('screen-status');
       } else if (currentUser.consentGiven) {
         showScreen('screen-demographics');
       } else {
@@ -138,7 +174,12 @@ document.getElementById('guest-btn').addEventListener('click', async () => {
 document.getElementById('welcome-continue').addEventListener('click', () => {
   if (currentUser && currentUser.consentGiven) {
     if (currentUser.demographics) {
-      showScreen('screen-tests');
+      if (currentUser.status) {
+        showScreen('screen-tests');
+      } else {
+        populateStatusForm();
+        showScreen('screen-status');
+      }
     } else {
       showScreen('screen-demographics');
     }
@@ -198,6 +239,45 @@ demoForm.addEventListener('submit', async (e) => {
       const msg = document.getElementById('demo-saved-msg');
       msg.textContent = 'Information saved successfully!';
       setTimeout(() => {
+        populateStatusForm();
+        showScreen('screen-status');
+        msg.textContent = '';
+      }, 800);
+    } else {
+      showScreen('screen-login');
+    }
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+const statusForm = document.getElementById('status-form');
+const statusSubmit = document.getElementById('status-submit');
+
+statusForm.addEventListener('change', () => {
+  checkStatusFormComplete();
+  document.getElementById('status-saved-msg').textContent = '';
+});
+
+statusForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const sleepQuality = statusForm.querySelector('input[name="sleepQuality"]:checked').value;
+  const caffeineIntake = statusForm.querySelector('input[name="caffeineIntake"]:checked').value;
+  const focusLevel = statusForm.querySelector('input[name="focusLevel"]:checked').value;
+  const loseTrackOfTime = statusForm.querySelector('input[name="loseTrackOfTime"]:checked').value;
+
+  try {
+    const res = await fetch('/api/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sleepQuality, caffeineIntake, focusLevel, loseTrackOfTime })
+    });
+    if (res.ok) {
+      currentUser.status = { sleepQuality, caffeineIntake, focusLevel, loseTrackOfTime };
+      updateWelcomeSteps();
+      const msg = document.getElementById('status-saved-msg');
+      msg.textContent = 'Status saved successfully!';
+      setTimeout(() => {
         showScreen('screen-tests');
         msg.textContent = '';
       }, 800);
@@ -215,6 +295,9 @@ document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
     if (target === 'screen-demographics') {
       populateDemographicsForm();
     }
+    if (target === 'screen-status') {
+      populateStatusForm();
+    }
     if (target === 'screen-welcome') {
       updateWelcomeSteps();
     }
@@ -228,11 +311,14 @@ document.getElementById('nav-logout').addEventListener('click', async () => {
     currentUser = null;
     document.getElementById('login-form').reset();
     document.getElementById('demographics-form').reset();
+    document.getElementById('status-form').reset();
     document.getElementById('consent-checkbox').checked = false;
     consentBtn.disabled = true;
     demoSubmit.disabled = true;
+    statusSubmit.disabled = true;
     document.getElementById('login-error').textContent = '';
     document.getElementById('demo-saved-msg').textContent = '';
+    document.getElementById('status-saved-msg').textContent = '';
     showScreen('screen-login');
   } catch (err) {
     console.error(err);

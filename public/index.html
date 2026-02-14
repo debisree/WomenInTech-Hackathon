@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ADHD Screening Test</title>
+  <title>ADHDecode</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <nav id="top-nav" class="top-nav hidden">
-    <div class="nav-brand">ADHD Screening</div>
+    <div class="nav-brand">ADHDecode</div>
     <div class="nav-links">
       <button class="nav-btn active" data-target="screen-welcome" id="nav-home">Home</button>
       <button class="nav-btn" data-target="screen-demographics" id="nav-info">My Info</button>
+      <button class="nav-btn" data-target="screen-status" id="nav-status">Status</button>
       <button class="nav-btn" data-target="screen-tests" id="nav-tests">Tests</button>
       <button class="nav-btn nav-logout" id="nav-logout">Logout</button>
     </div>
@@ -23,8 +24,8 @@
     <div id="screen-login" class="screen active">
       <div class="card login-card">
         <div class="logo">
-          <div class="logo-icon">&#9881;</div>
-          <h1>ADHD Screening</h1>
+          <div class="logo-icon">&#129504;</div>
+          <h1>ADHDecode</h1>
           <p class="subtitle">Likelihood Analysis Tool</p>
         </div>
         <form id="login-form">
@@ -62,6 +63,11 @@
           </div>
           <div class="step-item">
             <div class="step-num">3</div>
+            <span>Current Status</span>
+            <span class="step-status" id="step-status-status"></span>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
             <span>Take Screening Tests</span>
           </div>
         </div>
@@ -237,7 +243,141 @@
           </div>
 
           <p id="demo-saved-msg" class="success-text"></p>
-          <button type="submit" class="btn btn-primary btn-full" id="demo-submit" disabled>Save & Continue to Tests</button>
+          <button type="submit" class="btn btn-primary btn-full" id="demo-submit" disabled>Save & Continue</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="screen-status" class="screen">
+      <div class="card demographics-card">
+        <h1>Current Status</h1>
+        <p class="demo-subtitle">Tell us how you're feeling right now. This helps us interpret your test results more accurately. You can update this anytime.</p>
+        <form id="status-form">
+          <div class="form-group">
+            <label>Sleep quality last night</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="sleepQuality" value="Very Poor">
+                <span class="radio-btn"></span>
+                <span>Very Poor</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="sleepQuality" value="Poor">
+                <span class="radio-btn"></span>
+                <span>Poor</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="sleepQuality" value="Fair">
+                <span class="radio-btn"></span>
+                <span>Fair</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="sleepQuality" value="Good">
+                <span class="radio-btn"></span>
+                <span>Good</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="sleepQuality" value="Excellent">
+                <span class="radio-btn"></span>
+                <span>Excellent</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Caffeine intake today</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="caffeineIntake" value="None">
+                <span class="radio-btn"></span>
+                <span>None</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="caffeineIntake" value="Low (1 cup)">
+                <span class="radio-btn"></span>
+                <span>Low (1 cup)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="caffeineIntake" value="Moderate (2-3 cups)">
+                <span class="radio-btn"></span>
+                <span>Moderate (2-3 cups)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="caffeineIntake" value="High (4+ cups)">
+                <span class="radio-btn"></span>
+                <span>High (4+ cups)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Current focus level</label>
+            <div class="radio-group radio-group-inline">
+              <label class="radio-label">
+                <input type="radio" name="focusLevel" value="1">
+                <span class="radio-btn"></span>
+                <span>1</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="focusLevel" value="2">
+                <span class="radio-btn"></span>
+                <span>2</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="focusLevel" value="3">
+                <span class="radio-btn"></span>
+                <span>3</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="focusLevel" value="4">
+                <span class="radio-btn"></span>
+                <span>4</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="focusLevel" value="5">
+                <span class="radio-btn"></span>
+                <span>5</span>
+              </label>
+            </div>
+            <div class="focus-scale-labels">
+              <span>Very unfocused</span>
+              <span>Very focused</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Do you frequently lose track of time?</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="loseTrackOfTime" value="Never">
+                <span class="radio-btn"></span>
+                <span>Never</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="loseTrackOfTime" value="Rarely">
+                <span class="radio-btn"></span>
+                <span>Rarely</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="loseTrackOfTime" value="Sometimes">
+                <span class="radio-btn"></span>
+                <span>Sometimes</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="loseTrackOfTime" value="Often">
+                <span class="radio-btn"></span>
+                <span>Often</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="loseTrackOfTime" value="Very Often">
+                <span class="radio-btn"></span>
+                <span>Very Often</span>
+              </label>
+            </div>
+          </div>
+
+          <p id="status-saved-msg" class="success-text"></p>
+          <button type="submit" class="btn btn-primary btn-full" id="status-submit" disabled>Save & Continue to Tests</button>
         </form>
       </div>
     </div>

@@ -505,6 +505,27 @@ body {
   }
 }
 
+.radio-group-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.radio-group-inline .radio-label {
+  flex: 0 0 auto;
+  min-width: 50px;
+  text-align: center;
+}
+
+.focus-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.35rem;
+  padding: 0 0.25rem;
+}
+
 .test-status {
   font-size: 0.8rem;
   font-weight: 600;
