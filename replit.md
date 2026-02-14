@@ -23,7 +23,7 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 ```
 
 ## App Flow
-1. **Login** - Sign in with username/password or continue as guest
+1. **Login** - Sign in with existing account, create a new account, or continue as guest
 2. **Welcome** - Greeting screen with user's name and steps overview (shows completion status)
 3. **Consent** - One-time agreement (18+, not medical diagnosis). Skipped if already consented.
 4. **Demographics** - Gender, age group, ethnicity, ADHD diagnosis history. Editable anytime via nav.
@@ -56,7 +56,8 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 - My Info page pre-populates with saved data for editing
 
 ## API Routes
-- `POST /api/login` - Login or guest access
+- `POST /api/register` - Create new account (username + password, min 4 chars, case-insensitive uniqueness)
+- `POST /api/login` - Sign in with credentials or continue as guest
 - `POST /api/consent` - Record consent (one-time)
 - `POST /api/demographics` - Save demographics data (gender, ageGroup, ethnicity, adhdDiagnosed)
 - `GET /api/user` - Get current user info (also used for session restoration)

@@ -121,6 +121,34 @@ async function checkSession() {
 
 checkSession();
 
+let isRegisterMode = false;
+
+function setAuthMode(register) {
+  isRegisterMode = register;
+  const btn = document.getElementById('auth-submit-btn');
+  const confirmGroup = document.getElementById('confirm-password-group');
+  const toggleText = document.querySelector('.auth-toggle-text');
+  document.getElementById('login-error').textContent = '';
+
+  if (isRegisterMode) {
+    btn.textContent = 'Create Account';
+    confirmGroup.style.display = '';
+    toggleText.innerHTML = 'Already have an account? <a href="#" id="toggle-to-register">Sign in</a>';
+  } else {
+    btn.textContent = 'Sign In';
+    confirmGroup.style.display = 'none';
+    document.getElementById('confirm-password').value = '';
+    toggleText.innerHTML = 'Don\'t have an account? <a href="#" id="toggle-to-register">Create one</a>';
+  }
+}
+
+document.querySelector('.login-card').addEventListener('click', (e) => {
+  if (e.target.id === 'toggle-to-register') {
+    e.preventDefault();
+    setAuthMode(!isRegisterMode);
+  }
+});
+
 document.getElementById('login-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const username = document.getElementById('username').value.trim();
@@ -132,23 +160,53 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
     return;
   }
 
-  try {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    const data = await res.json();
-    if (data.success) {
-      currentUser = data.user;
-      document.getElementById('welcome-name').textContent = currentUser.name;
-      updateWelcomeSteps();
-      showScreen('screen-welcome');
-    } else {
-      errorEl.textContent = data.message;
+  if (isRegisterMode) {
+    const confirmPw = document.getElementById('confirm-password').value;
+    if (password !== confirmPw) {
+      errorEl.textContent = 'Passwords do not match.';
+      return;
     }
-  } catch (err) {
-    errorEl.textContent = 'Something went wrong. Please try again.';
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        currentUser = data.user;
+        document.getElementById('welcome-name').textContent = currentUser.name;
+        updateWelcomeSteps();
+        setAuthMode(false);
+        document.getElementById('login-form').reset();
+        showScreen('screen-welcome');
+      } else {
+        errorEl.textContent = data.message;
+      }
+    } catch (err) {
+      errorEl.textContent = 'Something went wrong. Please try again.';
+    }
+  } else {
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        currentUser = data.user;
+        document.getElementById('welcome-name').textContent = currentUser.name;
+        updateWelcomeSteps();
+        setAuthMode(false);
+        document.getElementById('login-form').reset();
+        showScreen('screen-welcome');
+      } else {
+        errorEl.textContent = data.message;
+      }
+    } catch (err) {
+      errorEl.textContent = 'Something went wrong. Please try again.';
+    }
   }
 });
 
@@ -319,6 +377,7 @@ document.getElementById('nav-logout').addEventListener('click', async () => {
     document.getElementById('login-error').textContent = '';
     document.getElementById('demo-saved-msg').textContent = '';
     document.getElementById('status-saved-msg').textContent = '';
+    setAuthMode(false);
     showScreen('screen-login');
   } catch (err) {
     console.error(err);

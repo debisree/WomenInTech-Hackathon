@@ -219,6 +219,23 @@ body {
   font-size: 0.85rem;
 }
 
+.auth-toggle-text {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 0.75rem;
+}
+
+.auth-toggle-text a {
+  color: #5a7d6a;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-toggle-text a:hover {
+  text-decoration: underline;
+}
+
 .error-text {
   color: #e53e3e;
   text-align: center;

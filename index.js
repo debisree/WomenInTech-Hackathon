@@ -5,6 +5,8 @@ const path = require('path');
 const app = express();
 const PORT = 5000;
 
+const users = {};
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -15,17 +17,42 @@ app.use(session({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.post('/api/register', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Please provide both username and password.' });
+  }
+  const key = username.toLowerCase();
+  if (users[key]) {
+    return res.status(409).json({ success: false, message: 'That username is already taken. Please choose another.' });
+  }
+  if (password.length < 4) {
+    return res.status(400).json({ success: false, message: 'Password must be at least 4 characters.' });
+  }
+  users[key] = { name: username, password };
+  req.session.user = { name: username, isGuest: false };
+  return res.json({ success: true, user: req.session.user });
+});
+
 app.post('/api/login', (req, res) => {
   const { username, password, isGuest } = req.body;
   if (isGuest) {
     req.session.user = { name: 'Guest', isGuest: true };
     return res.json({ success: true, user: req.session.user });
   }
-  if (username && password) {
-    req.session.user = { name: username, isGuest: false };
-    return res.json({ success: true, user: req.session.user });
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'Please provide both username and password.' });
   }
-  res.status(400).json({ success: false, message: 'Please provide credentials' });
+  const key = username.toLowerCase();
+  const stored = users[key];
+  if (!stored) {
+    return res.status(401).json({ success: false, message: 'Account not found. Please create an account first.' });
+  }
+  if (stored.password !== password) {
+    return res.status(401).json({ success: false, message: 'Incorrect password. Please try again.' });
+  }
+  req.session.user = { name: stored.name, isGuest: false };
+  return res.json({ success: true, user: req.session.user });
 });
 
 app.post('/api/consent', (req, res) => {
