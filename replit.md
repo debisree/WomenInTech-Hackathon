@@ -18,6 +18,7 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 │   ├── style.css         # Styles
 │   ├── app.js            # Frontend logic & navigation
 │   ├── time-perception.js # Time Perception Challenge test logic
+│   ├── reaction-test.js  # Reaction Test (Go/No-Go) test logic
 │   └── dashboard.js      # Dashboard aggregation & rendering
 ├── package.json
 └── .gitignore
@@ -29,7 +30,7 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 3. **Consent** - One-time agreement (18+, not medical diagnosis). Skipped if already consented.
 4. **Demographics** - Gender, age group, ethnicity, ADHD diagnosis history. Editable anytime via nav.
 5. **Current Status** - Sleep quality, caffeine intake, focus level (1-5), lose-track-of-time frequency. Editable anytime via nav.
-6. **Tests** - Time Perception Challenge (Test 1) + Test 2 (TBD)
+6. **Tests** - Time Perception Challenge (Test 1) + Reaction Test (Test 2, Go/No-Go CPT)
 7. **Dashboard** - Composite signal score, test breakdown, recommendations
 
 ## Test 1: Time Perception Challenge
@@ -51,6 +52,16 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
   - Per-trial table with Target, Your Time, Off By, Direction columns
   - Disclaimer and retake tips
 - **Persistence**: Results saved to session via API, restored on session reload
+
+## Test 2: Reaction Test (Go/No-Go)
+- **Flow**: Intro screen → Begin Test → 16 trials (70% GO/TAP, 30% NOGO/WAIT) → Results
+- **Timing**: 1200ms timeout per trial, client-side timer with server validation
+- **Stimulus**: Large colored circle — green "TAP" (GO) or red "WAIT" (NOGO)
+- **UI Features**: Animated countdown bar, streak/combo badge, feedback toasts (hit/miss/correct/false tap), visual pulse on tap
+- **Scoring**: Average RT, misses, false taps, RT variability (std dev)
+- **Server logging**: `[reaction] start/tap/timeout/done` events logged to console
+- **Gating**: Requires Time Perception Test completion first (403 if not done)
+- **Persistence**: Results saved to session, restored on reload
 
 ## Dashboard
 - **Composite Signal Score (0-100)**: Higher = stronger ADHD-like signal
@@ -79,6 +90,12 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 - `POST /api/status` - Save current status data (sleepQuality, caffeineIntake, focusLevel, loseTrackOfTime)
 - `POST /api/test-results/time-perception` - Save time perception test results
 - `GET /api/test-results/time-perception` - Get previous time perception results
+- `POST /api/reaction/start` - Start reaction test (requires time test completion)
+- `POST /api/reaction/stimulus-shown` - Mark stimulus as shown (sets server timestamp)
+- `GET /api/reaction/state` - Get current reaction test state
+- `POST /api/reaction/tap` - Record a tap response
+- `POST /api/reaction/timeout` - Record a timeout (no response)
+- `POST /api/reaction/reset` - Reset reaction test data
 - `GET /api/dashboard` - Get aggregated dashboard data with composite score, test breakdown, confidence
 
 ## Running

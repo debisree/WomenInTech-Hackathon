@@ -1,0 +1,200 @@
+You are a senior full-stack JavaScript/Node engineer and an AI product consultant working inside an existing Replit project for **Focus Forge** (JavaScript + Node.js).
+
+## Goal
+
+Implement a **cool, non-verbose, highly responsive Reaction Test** that *visibly starts* when the user clicks **Begin Test**. The current Begin button does nothing — fix that end-to-end.
+
+## Build a “slick” Go/No-Go Reaction Test (CPT-inspired)
+
+**Make it look like a real product test**:
+
+* Full-screen-ish test card with:
+
+  * Big stimulus text (center)
+  * Countdown ring/bar (animated)
+  * Subtle “combo / streak” feedback for correct responses
+  * Tiny haptics-style feedback (visual pulse) on tap (no audio)
+* Minimal text. One-line instructions only.
+* Test should feel instant: **Begin → stimulus appears immediately**.
+
+---
+
+## Constraints
+
+* Use the project’s existing stack (Express or current server). No new heavy frameworks.
+* Use session-based state (or in-memory store keyed by session/user id).
+* No DB, no external auth.
+* Keep the code small, readable, and demo-stable.
+
+---
+
+## Required Flow (must work)
+
+1. User opens Reaction Test page
+2. Click **Begin Test**
+3. UI immediately shows first stimulus + timer starts
+4. User taps during trials
+5. Test ends → metrics show → “Go to Results” works
+
+---
+
+## Test Rules (simple + scientific)
+
+* `N_TRIALS = 16`
+* `TIMEOUT_MS = 1200`
+* Trial mix: 70% **GO** (“TAP”), 30% **NO-GO** (“WAIT”) (pre-generated & shuffled)
+* GO:
+
+  * tap within timeout → record RT
+  * no tap by timeout → `misses++`
+* NO-GO:
+
+  * tap anytime during window → `falseTaps++`
+  * no tap → correct
+
+### Store on completion (in session/store)
+
+* `reactionTestDone = true`
+* `avgReactionMs` (int)
+* `misses` (int)
+* `falseTaps` (int)
+* optional: `rtStdMs` (int)
+* `reactionSummary` string
+
+---
+
+## IMPORTANT: Fix “Begin Test does nothing”
+
+Do BOTH:
+
+### Frontend
+
+* Wire Begin button to **call** `POST /api/reaction/start`
+* On success, set UI state (`started=true`) and render stimulus immediately
+
+### Backend
+
+* Ensure `/api/reaction/start` returns a valid JSON payload and doesn’t silently fail
+* Add server logging for start/tap/timeout so we can debug quickly in Replit console
+
+---
+
+## Backend (Express) — implement these endpoints
+
+### POST `/api/reaction/start`
+
+* If `!session.timeTestDone` → 403 JSON `{ error: "TIME_TEST_REQUIRED" }`
+* Create/overwrite `session.reaction`:
+
+  * `started=true`, `done=false`
+  * `trialIndex=0`
+  * `trials=[...]` ("GO"/"NOGO")
+  * `trialStartTs=Date.now()`
+  * `locked=false`
+  * `reactionTimes=[]`, `misses=0`, `falseTaps=0`
+* Return:
+
+```json
+{ "started": true, "done": false, "stimulus": "GO", "trialIndex": 0, "totalTrials": 16, "timeoutMs": 1200 }
+```
+
+### POST `/api/reaction/tap`
+
+* Debounce per trial using `locked`:
+
+  * if locked → return current state (don’t advance)
+  * else set locked=true and process
+* Compute elapsed = now - trialStartTs
+* Apply rules (GO records RT if within timeout; NOGO increments falseTaps)
+* Advance to next trial OR finalize
+* Return next state or final metrics payload:
+
+```json
+{ "done": false, "stimulus": "NOGO", "trialIndex": 3, "totalTrials": 16, "timeoutMs": 1200 }
+```
+
+or
+
+```json
+{ "done": true, "avgReactionMs": 610, "misses": 2, "falseTaps": 1, "reactionSummary": "Avg RT: 610ms | Misses: 2 | False taps: 1" }
+```
+
+### POST `/api/reaction/timeout`
+
+* If already locked → ignore
+* If current stimulus is GO and no tap → misses++
+* Advance/finalize (same as tap)
+* Return next state or final metrics
+
+### POST `/api/reaction/reset`
+
+* Clear `session.reaction` + reaction metrics fields
+* Return `{ ok: true }`
+
+Add concise logs:
+
+* `[reaction] start …`
+* `[reaction] tap …`
+* `[reaction] timeout …`
+* `[reaction] done …`
+
+---
+
+## Frontend — implement Reaction Test page (make it stand out)
+
+### UI/UX requirements (keep copy minimal)
+
+* Header: “Reaction Test”
+* Subtext: “Tap only on ✅ TAP. Don’t tap on 🚫 WAIT.” + “Not diagnostic.”
+* Big center stimulus:
+
+  * GO: “✅ TAP”
+  * NOGO: “🚫 WAIT”
+* One big primary button:
+
+  * label always “TAP”
+* Animated countdown:
+
+  * A progress bar that drains from 100% → 0 over 1200ms
+* Feedback:
+
+  * If correct action (tap on GO, or no tap on NOGO): show small “+1 streak” pulse
+  * If error: small red pulse “miss” or “false tap”
+* Progress: `Trial X / 16`
+
+### Logic requirements
+
+* `Begin Test` calls `/api/reaction/start`, sets `started=true`, starts timer immediately.
+* Per-trial timer:
+
+  * when it reaches 0 with no tap → call `/api/reaction/timeout`
+* On TAP click:
+
+  * immediately disable TAP button for that trial (local debounce)
+  * POST `/api/reaction/tap`
+  * render returned next stimulus
+* Clear timers on trial change and on unmount
+* Handle 403 gating:
+
+  * show “Complete Time Test first” + link/button route
+
+### Tech constraints
+
+* Use `fetch`
+* Use `setTimeout` for the per-trial timeout (prefer over setInterval)
+* Use `requestAnimationFrame` only if already in project; otherwise keep it simple
+* Keep state minimal: `started, done, stimulus, trialIndex, totalTrials, timeLeftMs, metrics, streak, feedback`
+
+---
+
+## Output required from you
+
+1. Updated folder structure
+2. Full code for changed/new files:
+
+* Backend routes/controller/service additions
+* Frontend Reaction Test page/component
+* Any small helper for session reaction engine
+
+Do NOT add new UI libraries unless the project already uses them.
+Make sure clicking **Begin Test visibly starts the test** in the browser immediately.

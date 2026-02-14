@@ -501,19 +501,21 @@
 
     <div id="screen-rt-trial" class="screen">
       <div class="card rt-trial-card">
-        <div class="tp-progress">
-          <span id="rt-trial-label">Trial 1 of 16</span>
-          <div class="tp-progress-bar">
-            <div class="tp-progress-fill" id="rt-progress-fill"></div>
-          </div>
+        <div class="rt-trial-header">
+          <span class="rt-trial-count" id="rt-trial-label">Trial 1 / 16</span>
+          <span class="rt-streak-badge" id="rt-streak-badge"></span>
+        </div>
+        <div class="rt-progress-slim">
+          <div class="rt-progress-slim-fill" id="rt-progress-fill"></div>
         </div>
         <div class="rt-stimulus-area" id="rt-stimulus-area">
           <div class="rt-stimulus-text" id="rt-stimulus-text">GET READY</div>
         </div>
+        <div class="rt-feedback-toast" id="rt-feedback-toast"></div>
         <div class="rt-timer-bar">
           <div class="rt-timer-fill" id="rt-timer-fill"></div>
         </div>
-        <button id="rt-tap-btn" class="btn btn-primary rt-tap-btn" disabled>TAP</button>
+        <button id="rt-tap-btn" class="btn rt-tap-btn" disabled>TAP</button>
       </div>
     </div>
 
@@ -680,10 +682,7 @@
 
   <script src="app.js"></script>
   <script src="time-perception.js"></script>
-<<<<<<< HEAD
   <script src="dashboard.js"></script>
-=======
   <script src="reaction-test.js"></script>
->>>>>>> 17f1d78cbf48fa36c505e6ed274c7caec96cbcc8
 </body>
 </html>
