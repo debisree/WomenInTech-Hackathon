@@ -1,353 +1,447 @@
-# ADHDecode
+<div align="center">
 
-Intelligent Adult ADHD Likelihood Screening Platform
+# 🧠 ADHDecode
 
-ADHDecode is a behavioral + questionnaire-based web application designed to estimate the likelihood of ADHD traits in adults using structured self-report measures and real-time cognitive micro-tasks.
+### *Intelligent Adult ADHD Likelihood Screening Platform*
 
-It combines psychometric screening with measurable behavioral signals to generate a structured, explainable likelihood score.
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![License](https://img.shields.io/badge/license-proprietary-blue.svg)]()
+[![Platform](https://img.shields.io/badge/platform-web-orange.svg)]()
 
-⚠️ ADHDecode is a screening and awareness tool. It is not a medical diagnosis and does not replace professional clinical evaluation.
+---
 
-🌍 Vision
+**ADHDecode** is a behavioral + questionnaire-based web application designed to estimate the likelihood of ADHD traits in adults using structured self-report measures and real-time cognitive micro-tasks.
+
+*It combines psychometric screening with measurable behavioral signals to generate a structured, explainable likelihood score.*
+
+</div>
+
+---
+
+## ⚠️ **Important Notice**
+
+> **ADHDecode is a screening and awareness tool.**  
+> It is **not a medical diagnosis** and does not replace professional clinical evaluation.
+
+---
+
+## 🌍 **Vision**
 
 ADHDecode aims to bridge the gap between:
 
-Subjective symptom reporting
+<table>
+<tr>
+<td align="center">📝<br><b>Subjective symptom reporting</b></td>
+<td align="center">📊<br><b>Objective behavioral measurement</b></td>
+<td align="center">🎯<br><b>Accessible early awareness tools</b></td>
+</tr>
+</table>
 
-Objective behavioral measurement
+By integrating cognitive testing with structured scoring, **ADHDecode moves beyond questionnaire-only screening**.
 
-Accessible early awareness tools
+---
 
-By integrating cognitive testing with structured scoring, ADHDecode moves beyond questionnaire-only screening.
+## 🏗 **Product Flow**
 
-🏗 Product Flow
-User Login / Guest Mode
-        ↓
-Informed Consent
-        ↓
-Demographics & Contextual Data
-        ↓
-Screening Selection
-   • Quick Check
-   • Moderate Check
-   • Detailed Check
-        ↓
-Behavioral Cognitive Tasks
-   • Time Perception Challenge
-   • Reaction Time Test
-        ↓
-Scoring Engine
-        ↓
-Likelihood Report + Subscale Insights
+```mermaid
+graph TD
+    A[🔐 User Login / Guest Mode] --> B[📋 Informed Consent]
+    B --> C[👤 Initial Demographics Data]
+    C --> D[💭 How Are You Feeling Today?]
+    D --> E[⏳ Time Precision Test]
+    E --> E1[📊 Immediate Test Result]
+    E1 --> F[⚡ Reaction Test]
+    F --> F1[📊 Immediate Test Result]
+    F1 --> G[📈 Conclusive Dashboard Results]
+    
+    style E fill:#e1f5ff
+    style F fill:#ffe1f5
+    style E1 fill:#d4edda
+    style F1 fill:#d4edda
+    style G fill:#fff3cd
+```
 
-🔐 Authentication
+---
+
+## 🔐 **Authentication**
+
+<details>
+<summary><b>Click to expand authentication options</b></summary>
 
 Users may:
 
-Create an account (for longitudinal tracking)
+- ✅ **Create an account** (for longitudinal tracking)
+- ✅ **Continue in Guest Mode** (session-based only)
 
-Continue in Guest Mode (session-based only)
+> 💡 Guest data is not persistently stored.
 
-Guest data is not persistently stored.
+</details>
 
-📜 Informed Consent
+---
+
+## 📜 **Informed Consent**
 
 Users must:
 
-Confirm age ≥ 18
+| Requirement | Description |
+|------------|-------------|
+| ✔️ **Age Verification** | Confirm age ≥ 18 |
+| ✔️ **Acknowledgment** | Acknowledge non-diagnostic nature |
+| ✔️ **Data Terms** | Accept data transparency terms |
 
-Acknowledge non-diagnostic nature
+---
 
-Accept data transparency terms
-
-👤 Demographics & Context Collection
+## 👤 **Demographics & Context Collection**
 
 Minimal contextual variables are collected to improve interpretability:
 
-Age group
+<table>
+<tr>
+<td>
 
-Gender (optional)
+📅 **Age group**  
+👥 **Gender** *(optional)*  
+🎓 **Education level**  
+💼 **Employment status**
 
-Education level
+</td>
+<td>
 
-Employment status
+🏥 **Prior ADHD diagnosis** *(Yes/No/Unsure)*  
+😴 **Sleep quality**  
+☕ **Caffeine intake**  
+💊 **Current medication** *(optional)*
 
-Prior ADHD diagnosis (Yes / No / Unsure)
+</td>
+</tr>
+</table>
 
-Sleep quality
+> These variables inform contextual adjustment but **do not determine outcome**.
 
-Caffeine intake
+---
 
-Current medication (optional)
+## 🧪 **Screening Modules**
 
-These variables inform contextual adjustment but do not determine outcome.
+### 1️⃣ Symptom Screening
 
-🧪 Screening Modules
-1️⃣ Symptom Screening
+Choose from **three selectable modes**:
 
-Three selectable modes:
+| Mode | Description | Coverage |
+|------|-------------|----------|
+| 🔹 **Quick Check** | Fast screening covering core ADHD domains | Basic |
+| 🔸 **Moderate Check** | Expanded coverage: Inattention, Hyperactivity, Impulsivity, Executive function | Intermediate |
+| 🔶 **Detailed Check** | Comprehensive screening aligned conceptually with DSM-5 criteria (screening-level only) | Comprehensive |
 
-🔹 Quick Check
+#### 📊 Scoring Method
 
-Fast screening covering core ADHD domains.
+```
+✓ Likert-scale responses
+✓ Domain-level subscales
+✓ Weighted composite score
+```
 
-🔹 Moderate Check
+---
 
-Expanded coverage:
+## 🧠 **Behavioral Cognitive Modules**
 
-Inattention
+### ⏳ Time Perception Challenge
 
-Hyperactivity
+<table>
+<tr>
+<td width="50%">
 
-Impulsivity
-
-Executive function
-
-🔹 Detailed Check
-
-Comprehensive screening aligned conceptually with DSM-5 criteria (screening-level only).
-
-Scoring Method
-
-Likert-scale responses
-
-Domain-level subscales
-
-Weighted composite score
-
-🧠 Behavioral Cognitive Modules
-⏳ Time Perception Challenge
-Purpose
+**🎯 Purpose**
 
 Measures internal time estimation accuracy and variability.
 
-Task Structure
+**📝 Task Structure**
 
-User produces target intervals (e.g., 3s, 6s, 10s, 15s)
+- User produces target intervals (e.g., 3s, 6s, 10s, 15s)
+- Multiple repeated trials
 
-Multiple repeated trials
+</td>
+<td width="50%">
 
-Captured Metrics
+**📊 Captured Metrics**
 
-Per trial:
+**Per trial:**
+- Target duration
+- Produced duration
+- Absolute error
+- Signed bias
 
-Target duration
+**Aggregate:**
+- Mean absolute error
+- Variability (SD)
+- Performance drift
 
-Produced duration
+</td>
+</tr>
+</table>
 
-Absolute error
+> 💡 **Higher variability may indicate attention instability.**
 
-Signed bias
+---
 
-Aggregate:
+### ⚡ Reaction Time Test
 
-Mean absolute error
+<table>
+<tr>
+<td width="50%">
 
-Variability (SD)
-
-Performance drift
-
-Higher variability may indicate attention instability.
-
-⚡ Reaction Time Test
-Purpose
+**🎯 Purpose**
 
 Measures response speed, attention stability, and impulsivity patterns.
 
-Task Structure
+**📝 Task Structure**
 
-Random delay (1–4s)
+- Random delay (1–4s)
+- Visual stimulus
+- User responds as quickly as possible
 
-Visual stimulus
+</td>
+<td width="50%">
 
-User responds as quickly as possible
+**📊 Captured Metrics**
 
-Captured Metrics
+**Per trial:**
+- Reaction time (ms)
+- Premature response
+- Missed response
 
-Per trial:
+**Aggregate:**
+- Median reaction time
+- Reaction time variability
+- Error rate
+- Percentile dispersion
 
-Reaction time (ms)
+</td>
+</tr>
+</table>
 
-Premature response
+> 💡 **Reaction time variability is often more informative than raw speed.**
 
-Missed response
+---
 
-Aggregate:
+## 🧮 **Scoring Engine**
 
-Median reaction time
+The final **ADHD Likelihood Score** integrates multi-dimensional inputs.
 
-Reaction time variability
+### ⚖️ Weighted Framework
 
-Error rate
+| Component | Weight |
+|-----------|--------|
+| 📋 **Symptom Screening** | 50–60% |
+| ⚡ **Reaction Time Variability & Errors** | 20–25% |
+| ⏳ **Time Perception Variability** | 15–20% |
+| 🔄 **Contextual Adjustment** | Dynamic |
 
-Percentile dispersion
+### 🔢 Scoring Logic (Conceptual)
 
-Reaction time variability is often more informative than raw speed.
+```
+1. Normalize each component to 0–100 scale
+2. Apply weighted aggregation
+3. Adjust for contextual modifiers
+4. Generate:
+   ├── Overall likelihood score
+   ├── Subscale breakdown
+   └── Behavioral summary
+```
 
-🧮 Scoring Engine
-
-The final ADHD Likelihood Score integrates multi-dimensional inputs.
-
-Weighted Framework
-Component	Weight
-Symptom Screening	50–60%
-Reaction Time Variability & Errors	20–25%
-Time Perception Variability	15–20%
-Contextual Adjustment	Dynamic
-Scoring Logic (Conceptual)
-
-Normalize each component to 0–100 scale
-
-Apply weighted aggregation
-
-Adjust for contextual modifiers
-
-Generate:
-
-Overall likelihood score
-
-Subscale breakdown
-
-Behavioral summary
-
-Output Report
+### 📄 Output Report
 
 Users receive:
 
-ADHD Likelihood Score (0–100)
+- **📊 ADHD Likelihood Score** (0–100)
+- **🎚️ Tier classification:**
+  - 🟢 Low
+  - 🟡 Mild
+  - 🟠 Moderate
+  - 🔴 High
+- **📈 Domain-level breakdown**
+- **🧠 Behavioral variability summary**
+- **⚠️ Clear disclaimer**
 
-Tier classification:
+---
 
-Low
+## 🏛 **Technical Architecture**
 
-Mild
+### System Overview
 
-Moderate
+```
+┌─────────────────────────────┐
+│  Frontend (HTML/CSS/JS)     │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│  API Layer (Node.js/Python) │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│     Scoring Engine          │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│  Database (optional)        │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│    Report Generator         │
+└─────────────────────────────┘
+```
 
-High
+### 🔧 Core Components
 
-Domain-level breakdown
+<table>
+<tr>
+<td width="33%">
 
-Behavioral variability summary
+**🎨 Frontend**
 
-Clear disclaimer
+- Task rendering
+- Real-time timers
+- Stimulus control
+- Trial-level logging
 
-🏛 Technical Architecture
-System Overview
-Frontend (HTML/CSS/JS)
-        ↓
-API Layer (Node.js or Python)
-        ↓
-Scoring Engine
-        ↓
-Database (optional persistent storage)
-        ↓
-Report Generator
+</td>
+<td width="33%">
 
-Core Components
-Frontend
+**⚙️ Backend**
 
-Task rendering
+- Session management
+- Data validation
+- Scoring computation
+- Report generation
 
-Real-time timers
+</td>
+<td width="33%">
 
-Stimulus control
+**💾 Data Layer**
 
-Trial-level logging
+- Encrypted user IDs
+- Session logs
+- Behavioral metrics
+- Questionnaire responses
 
-Backend
+</td>
+</tr>
+</table>
 
-Session management
+---
 
-Data validation
-
-Scoring computation
-
-Report generation
-
-Data Layer
-
-Encrypted user IDs
-
-Session logs
-
-Behavioral metrics
-
-Questionnaire responses
-
-🔬 Research & Scientific Positioning
+## 🔬 **Research & Scientific Positioning**
 
 ADHDecode draws conceptual inspiration from:
 
-Adult ADHD Self-Report Scale (ASRS)
+- 📋 **Adult ADHD Self-Report Scale (ASRS)**
+- ⚡ **Reaction time variability research**
+- 🚫 **Go/No-Go paradigms**
+- ⏱️ **Time perception research in ADHD populations**
 
-Reaction time variability research
+> ⚠️ This platform is **not affiliated** with clinical diagnostic instruments.
 
-Go/No-Go paradigms
+---
 
-Time perception research in ADHD populations
+## 🔒 **Privacy & Ethics**
 
-This platform is not affiliated with clinical diagnostic instruments.
+<div align="center">
 
-🔒 Privacy & Ethics
+| Principle | Commitment |
+|-----------|------------|
+| 🚫 | **No sale or sharing of data** |
+| 🔐 | **Minimal personal identifiers** |
+| 📖 | **Transparent data handling** |
+| 🗑️ | **User deletion option** (account mode) |
 
-No sale or sharing of data
+**ADHDecode prioritizes ethical behavioral data usage.**
 
-Minimal personal identifiers
+</div>
 
-Transparent data handling
+---
 
-User deletion option (account mode)
+## 🚀 **Future Roadmap**
 
-ADHDecode prioritizes ethical behavioral data usage.
+- [ ] 🚫 Go/No-Go inhibition module
+- [ ] 🧩 Working memory task
+- [ ] 👁️ Sustained Attention (CPT-style)
+- [ ] 📊 Longitudinal tracking dashboard
+- [ ] 🤖 AI-powered interpretability
+- [ ] 🔬 Research validation study
 
-🚀 Future Roadmap
+---
 
-Go/No-Go inhibition module
+## 🎯 **Intended Use**
 
-Working memory task
-
-Sustained Attention (CPT-style)
-
-Longitudinal tracking dashboard
-
-AI-powered interpretability
-
-Research validation study
-
-🎯 Intended Use
+<div align="center">
 
 ADHDecode is designed for:
 
-Adult awareness screening
+| Use Case |
+|----------|
+| 🧑‍💼 Adult awareness screening |
+| 🔬 Research prototypes |
+| 💡 Digital health innovation |
+| 🎯 Early-stage cognitive assessment exploration |
 
-Research prototypes
+</div>
 
-Digital health innovation
+---
 
-Early-stage cognitive assessment exploration
+## ⚠️ **Medical Disclaimer**
 
-⚠️ Medical Disclaimer
+<div align="center">
 
-ADHDecode does not diagnose ADHD.
-Results indicate statistical likelihood patterns only.
-Users should consult licensed professionals for formal evaluation.
+### ⚕️ **IMPORTANT**
 
-🛠 Tech Stack
+**ADHDecode does not diagnose ADHD.**
 
-Replit Deployment
+Results indicate **statistical likelihood patterns only**.
 
-HTML / CSS / JavaScript
+Users should consult **licensed professionals** for formal evaluation.
 
-Node.js or Python Backend
+</div>
 
-Secure session handling
+---
 
-Optional database integration
+## 🛠 **Tech Stack**
 
-📄 License & Copyright
+<div align="center">
 
-© 2026 ADHDecode. All rights reserved.
+![Replit](https://img.shields.io/badge/Replit-Deployment-orange?logo=replit)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 
-This software, design, scoring methodology, interface, and documentation are the intellectual property of ADHDecode.
-Unauthorized reproduction, redistribution, or commercial use without written permission is strictly prohibited.
+- ✅ Replit Deployment
+- ✅ HTML / CSS / JavaScript
+- ✅ Node.js or Python Backend
+- ✅ Secure session handling
+- ✅ Optional database integration
+
+</div>
+
+---
+
+## 📄 **License & Copyright**
+
+<div align="center">
+
+**© 2026 ADHDecode. All rights reserved.**
+
+---
+
+*This software, design, scoring methodology, interface, and documentation are the intellectual property of ADHDecode.*
+
+**Unauthorized reproduction, redistribution, or commercial use without written permission is strictly prohibited.**
+
+---
+
+Made with 🧠 and 💙
+
+</div>
