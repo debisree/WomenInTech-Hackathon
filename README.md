@@ -15,7 +15,19 @@
 *It combines psychometric screening with measurable behavioral signals to generate a structured, explainable likelihood score.*
 
 </div>
+---
 
+👥 Team
+
+<b>Aryama Ray</b><br>
+https://www.linkedin.com/in/aryamaray/
+
+<b>Debisree Ray</b><br>
+https://www.linkedin.com/in/debisree-ray-ph-d-82241355/
+
+
+
+</div>
 ---
 
 ## ⚠️ **Important Notice**
