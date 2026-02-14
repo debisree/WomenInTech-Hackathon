@@ -1035,3 +1035,136 @@ body {
     width: 100%;
   }
 }
+
+.rt-card h1 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.rt-subtitle {
+  color: #888;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.rt-trial-card {
+  text-align: center;
+  padding: 2rem 2.5rem;
+}
+
+.rt-stimulus-area {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem auto;
+  transition: background 0.15s, transform 0.15s;
+  background: #e2e8f0;
+}
+
+.rt-stimulus-area.rt-go {
+  background: linear-gradient(135deg, #38a169, #2f855a);
+  transform: scale(1.05);
+}
+
+.rt-stimulus-area.rt-nogo {
+  background: linear-gradient(135deg, #e53e3e, #c53030);
+  transform: scale(1.05);
+}
+
+.rt-stimulus-text {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.rt-timer-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 1rem 0 1.5rem;
+}
+
+.rt-timer-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 4px;
+  width: 100%;
+  transition: width linear;
+}
+
+.rt-tap-btn {
+  width: 200px;
+  height: 64px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  border-radius: 16px;
+  margin: 0 auto;
+  display: block;
+}
+
+.rt-tap-btn:disabled {
+  opacity: 0.4;
+}
+
+.rt-metrics-grid {
+  margin: 1.5rem 0;
+}
+
+.rt-metric-big {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.rt-metric-big-value {
+  display: block;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #667eea;
+  line-height: 1.1;
+}
+
+.rt-metric-big-label {
+  display: block;
+  font-size: 0.85rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 0.25rem;
+}
+
+.rt-summary-text {
+  background: #f7f8fc;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+@media (max-width: 600px) {
+  .rt-stimulus-area {
+    width: 180px;
+    height: 180px;
+  }
+
+  .rt-stimulus-text {
+    font-size: 1.5rem;
+  }
+
+  .rt-tap-btn {
+    width: 160px;
+    height: 56px;
+    font-size: 1.25rem;
+  }
+}

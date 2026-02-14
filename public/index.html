@@ -402,10 +402,11 @@
           <div class="test-card" id="test-2-card">
             <div class="test-info">
               <div class="test-badge">Test 2</div>
-              <h3>Coming Soon</h3>
-              <p>This test will be available shortly.</p>
+              <h3>Reaction Test</h3>
+              <p>Measure your attention and impulse control with a Go/No-Go task.</p>
+              <p class="test-status" id="test2-status"></p>
             </div>
-            <button class="btn btn-outline" disabled>Not Available</button>
+            <button class="btn btn-primary" id="start-test-2">Start Test</button>
           </div>
         </div>
       </div>
@@ -456,6 +457,95 @@
         <div class="tp-buttons">
           <button id="tp-start-btn" class="btn btn-primary tp-action-btn">START</button>
           <button id="tp-stop-btn" class="btn btn-primary tp-action-btn tp-stop" disabled>STOP</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="screen-rt-locked" class="screen">
+      <div class="card rt-card">
+        <h1>Reaction Test Locked</h1>
+        <p class="rt-subtitle">You need to complete the Time Perception Challenge before starting the Reaction Test.</p>
+        <button id="rt-go-tests" class="btn btn-primary btn-full">Back to Tests</button>
+      </div>
+    </div>
+
+    <div id="screen-rt-intro" class="screen">
+      <div class="card rt-card">
+        <h1>Reaction Test</h1>
+        <p class="rt-subtitle">This test measures your sustained attention and impulse control using a Go/No-Go task.</p>
+        <div class="tp-instructions">
+          <div class="tp-instruction-item">
+            <strong>How it works:</strong>
+            <p>You will see either a green "TAP" prompt or a red "WAIT" prompt. React as quickly as you can based on the prompt.</p>
+          </div>
+          <div class="tp-instruction-item">
+            <strong>Rules:</strong>
+            <ul>
+              <li>When you see <strong>TAP</strong> - press the TAP button as fast as possible</li>
+              <li>When you see <strong>WAIT</strong> - do NOT press anything, just wait</li>
+              <li>Each trial lasts only 1.2 seconds</li>
+            </ul>
+          </div>
+          <div class="tp-instruction-item">
+            <strong>Test structure:</strong>
+            <p>16 trials total (~70% TAP, ~30% WAIT). The test takes about 30 seconds.</p>
+          </div>
+        </div>
+        <div class="tp-disclaimer">
+          This is not a diagnosis. Results are for informational purposes only and should not replace professional medical assessment.
+        </div>
+        <button id="rt-begin" class="btn btn-primary btn-full">Begin Test</button>
+      </div>
+    </div>
+
+    <div id="screen-rt-trial" class="screen">
+      <div class="card rt-trial-card">
+        <div class="tp-progress">
+          <span id="rt-trial-label">Trial 1 of 16</span>
+          <div class="tp-progress-bar">
+            <div class="tp-progress-fill" id="rt-progress-fill"></div>
+          </div>
+        </div>
+        <div class="rt-stimulus-area" id="rt-stimulus-area">
+          <div class="rt-stimulus-text" id="rt-stimulus-text">GET READY</div>
+        </div>
+        <div class="rt-timer-bar">
+          <div class="rt-timer-fill" id="rt-timer-fill"></div>
+        </div>
+        <button id="rt-tap-btn" class="btn btn-primary rt-tap-btn" disabled>TAP</button>
+      </div>
+    </div>
+
+    <div id="screen-rt-results" class="screen">
+      <div class="card tp-results-card">
+        <h1>Reaction Test Results</h1>
+        <div class="rt-metrics-grid">
+          <div class="rt-metric-big">
+            <span class="rt-metric-big-value" id="rt-avg-rt">--</span>
+            <span class="rt-metric-big-label">Avg Reaction Time</span>
+          </div>
+          <div class="tp-metrics">
+            <div class="tp-metric">
+              <span class="tp-metric-label">Misses</span>
+              <span class="tp-metric-value" id="rt-misses">--</span>
+            </div>
+            <div class="tp-metric">
+              <span class="tp-metric-label">False Taps</span>
+              <span class="tp-metric-value" id="rt-false-taps">--</span>
+            </div>
+            <div class="tp-metric">
+              <span class="tp-metric-label">RT Variability</span>
+              <span class="tp-metric-value" id="rt-std">--</span>
+            </div>
+          </div>
+        </div>
+        <div class="rt-summary-text" id="rt-summary-text"></div>
+        <div class="tp-disclaimer">
+          This is not a diagnosis. Results are for informational purposes only and should not replace professional medical assessment.
+        </div>
+        <div class="tp-result-actions">
+          <button id="rt-retake" class="btn btn-outline">Re-run Reaction Test</button>
+          <button id="rt-back-tests" class="btn btn-primary">Back to Tests</button>
         </div>
       </div>
     </div>
@@ -547,5 +637,6 @@
 
   <script src="app.js"></script>
   <script src="time-perception.js"></script>
+  <script src="reaction-test.js"></script>
 </body>
 </html>
