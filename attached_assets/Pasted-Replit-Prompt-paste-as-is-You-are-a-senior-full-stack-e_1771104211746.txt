@@ -1,0 +1,216 @@
+Replit Prompt (paste as-is)
+
+You are a senior full-stack engineer. My Replit repo already has multiple ADHD-related screening tests implemented (adult-only) including:
+
+consent + demographics intake
+
+at least one questionnaire/screener flow (quick/moderate/detailed)
+
+Time Perception Challenge (time estimation) with a results object saved locally
+
+Reaction Time test (or a similar attention/response task) with results saved locally
+
+Now implement a FINAL DASHBOARD that:
+
+shows the user’s accumulated results across all tests (latest + history if available)
+
+computes a single composite “ADHD Likelihood Signal” (NOT a diagnosis)
+
+gives a clear, cautious recommendation: “Higher likelihood signal / Lower likelihood signal / Inconclusive”
+
+includes a transparent, easy-to-understand breakdown of how the score was produced.
+
+HARD SAFETY REQUIREMENTS (must follow)
+
+The dashboard must NEVER claim a diagnosis.
+
+Use wording like: “likelihood signal,” “screening signal,” “risk indicator,” “inconclusive,” “consider validated screeners + clinician.”
+
+Always display a disclaimer prominently:
+“Not a diagnosis. Results can be influenced by sleep, stress, caffeine, medications, anxiety, depression, environment, and device latency. For concerns, consider validated screeners and talk to a clinician.”
+
+Do NOT give medical advice or treatment suggestions.
+
+Make it clear that this app is for informational purposes.
+
+1) Minimal repo changes
+
+Do NOT change unrelated parts of the app.
+
+Use existing navigation/routing patterns.
+
+Add ONE new page/screen: “Dashboard” and wire it into the UI (e.g., in the tests list or main nav).
+
+Keep styling consistent with the existing design system.
+
+2) Data model + persistence (accumulation)
+
+Implement a lightweight “results registry” that reads the existing stored test results and normalizes them into a common format.
+
+Required behavior
+
+Read latest results from wherever each test already saves them (localStorage or existing persistence layer).
+
+Create a single combined key like:
+latest_adhdecode_dashboard and optionally adhdecode_history[] (append per test run).
+
+If there is a user/session concept, store under a user-scoped key; otherwise store globally.
+
+Support missing tests: if a user has only completed some tests, dashboard should still work and show “Inconclusive” until enough signals exist.
+
+Normalized record fields (suggested)
+
+For each test result store:
+
+test_type (e.g., “screener”, “time_perception”, “reaction_time”)
+
+timestamp
+
+raw_metrics (existing object)
+
+normalized_score_0_100 (computed)
+
+quality_flags (e.g., “too_fast”, “device_latency”, “incomplete”)
+
+notes (optional)
+
+3) Composite score (0–100) + recommendation categories
+
+Create a single score called:
+“ADHDecode Signal Score (0–100)” (higher = stronger ADHD-like signal in these tasks)
+
+Normalize each test into 0–100 “signal” direction
+
+Important: different tests produce different metrics; normalize them into a signal score where:
+
+0 = minimal signal
+
+100 = stronger signal
+
+Add caps/clamps and robust normalization to avoid extreme values.
+
+A) Screeners / questionnaires
+
+If a validated screener exists (ASRS-like), use its standard scoring direction if implemented.
+
+Map screener outcome into 0–100 signal score.
+
+If you have quick/moderate/detailed variants, normalize each to the same scale.
+
+B) Time perception challenge
+
+Use the final “Time Control Score” you already computed, but convert to “signal” direction:
+
+time_signal = 100 - time_control_score
+So better time control = lower signal.
+
+Also apply quality rules:
+
+If the user completed too few trials, flag “inconclusive_time_test”.
+
+C) Reaction time test
+
+Use available metrics (mean RT, variability, error rate, lapses, false starts).
+Normalize into 0–100 signal:
+
+Higher variability / more lapses / higher error rate = higher signal.
+Include device-latency warning if applicable.
+
+Composite weighting (transparent)
+
+Use a weighted average with default weights (adjust if some tests are missing):
+
+Screeners: 0.50
+
+Reaction: 0.30
+
+Time perception: 0.20
+
+If a test is missing, reweight remaining tests proportionally and mark confidence as lower.
+
+Recommendation buckets (non-medical)
+
+0–34: “Lower likelihood signal (based on completed tests)”
+
+35–64: “Mixed / Inconclusive signal”
+
+65–100: “Higher likelihood signal (screening signal only)”
+
+Add a Confidence Indicator:
+
+High confidence: completed screener + both tasks, no quality flags
+
+Medium: completed screener + one task
+
+Low: only one test OR quality flags OR incomplete data
+
+4) Dashboard UI requirements (must-have)
+Layout
+
+Header: “Your ADHDecode Dashboard”
+
+Big card: ADHDecode Signal Score (0–100) + bucket label + confidence
+
+Short explanation: “This is a screening signal, not a diagnosis.”
+
+Score breakdown (graphic cue)
+
+Include a visual breakdown showing each test’s contribution:
+
+A stacked bar or three horizontal bars:
+
+Screener signal (0–100)
+
+Reaction signal (0–100)
+
+Time perception signal (0–100)
+
+Show the weights and how the final score was computed in plain language.
+
+Test cards
+
+For each test, show a small card with:
+
+Status: Completed / Not completed
+
+Date/time last taken
+
+Key metric highlights (e.g., Time: MAE/variability/bias, Reaction: mean RT/variability/errors, Screener: total score)
+
+Button: “View details” (goes to that test’s results page if exists)
+
+Button: “Retake” (starts that test)
+
+History view (nice-to-have but valuable)
+
+Simple timeline list: last N runs, showing score trend
+
+If charts already exist in your stack, add a simple line chart of Signal Score over time; otherwise keep it as a list.
+
+Strong disclaimers + next-step nudges (non-medical)
+
+Provide text:
+
+“If you’re concerned, consider taking a validated screener (e.g., ASRS) and discussing results with a clinician.”
+
+“Try retaking tests when rested and distraction-free.”
+
+5) Edge cases + quality checks
+
+If results are from different sessions/devices, show a note: “Comparisons may vary by device.”
+
+If reaction test detects unusually fast clicks or missing trials, flag “low quality run”.
+
+If only one test exists: show Inconclusive and prompt to complete remaining tests.
+
+6) Deliverables
+
+Add the Dashboard page, connect it in navigation.
+
+Add a small results aggregation utility (localized to this feature).
+
+Ensure everything runs without breaking existing flows.
+
+Print a “What I changed” summary listing files touched and where to click to access the dashboard.
+
+Start by scanning the repo to find where each test saves results and reuse those objects. Keep edits minimal and consistent with existing patterns.

@@ -359,6 +359,9 @@ document.querySelectorAll('.nav-btn[data-target]').forEach(btn => {
     if (target === 'screen-welcome') {
       updateWelcomeSteps();
     }
+    if (target === 'screen-dashboard') {
+      if (typeof DASH !== 'undefined') DASH.load();
+    }
     showScreen(target);
   });
 });

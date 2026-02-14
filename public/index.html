@@ -15,6 +15,7 @@
       <button class="nav-btn" data-target="screen-demographics" id="nav-info">My Info</button>
       <button class="nav-btn" data-target="screen-status" id="nav-status">Status</button>
       <button class="nav-btn" data-target="screen-tests" id="nav-tests">Tests</button>
+      <button class="nav-btn" data-target="screen-dashboard" id="nav-dashboard">Dashboard</button>
       <button class="nav-btn nav-logout" id="nav-logout">Logout</button>
     </div>
   </nav>
@@ -543,9 +544,52 @@
       </div>
     </div>
 
+    <div id="screen-dashboard" class="screen">
+      <div class="card dash-card">
+        <h1>Your ADHDecode Dashboard</h1>
+        <p class="dash-subtitle">This is a screening signal, not a diagnosis. Your results are for informational purposes only.</p>
+
+        <div class="dash-score-section" id="dash-score-section">
+          <div class="dash-score-circle" id="dash-score-circle">
+            <span class="dash-score-num" id="dash-score-num">--</span>
+            <span class="dash-score-label">Signal Score</span>
+          </div>
+          <div class="dash-bucket" id="dash-bucket">--</div>
+          <div class="dash-confidence" id="dash-confidence"></div>
+        </div>
+
+        <div class="dash-breakdown" id="dash-breakdown">
+          <h3>Score breakdown</h3>
+          <p class="dash-breakdown-intro" id="dash-breakdown-intro"></p>
+          <div id="dash-breakdown-bars"></div>
+        </div>
+
+        <div class="dash-tests-section">
+          <h3>Individual tests</h3>
+          <div id="dash-test-cards"></div>
+        </div>
+
+        <div class="dash-status-note" id="dash-status-note" style="display:none;"></div>
+
+        <div class="tp-disclaimer">
+          Not a diagnosis. Results can be influenced by sleep, stress, caffeine, medications, anxiety, depression, environment, and device latency. For concerns, consider validated screeners and talk to a clinician.
+        </div>
+
+        <div class="dash-next-steps">
+          <p>If you're concerned, consider taking a validated screener (e.g., ASRS) and discussing results with a clinician.</p>
+          <p>Try retaking tests when rested and distraction-free for more reliable results.</p>
+        </div>
+
+        <div class="dash-actions">
+          <button class="btn btn-outline btn-full" id="dash-go-tests">Take More Tests</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <script src="app.js"></script>
   <script src="time-perception.js"></script>
+  <script src="dashboard.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 # ADHDecode
 
 ## Overview
-An ADHD likelihood analysis application (ADHDecode) that guides users through a multi-step flow: login, consent, demographics collection, current status assessment, and screening tests including a Time Perception Challenge.
+An ADHD likelihood analysis application (ADHDecode) that guides users through a multi-step flow: login, consent, demographics collection, current status assessment, and screening tests including a Time Perception Challenge. Features a Dashboard that aggregates results into a composite "ADHD Likelihood Signal" score.
 
 ## Project Architecture
 - **Runtime**: Node.js 20
@@ -17,7 +17,8 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 │   ├── index.html        # All screens (SPA)
 │   ├── style.css         # Styles
 │   ├── app.js            # Frontend logic & navigation
-│   └── time-perception.js # Time Perception Challenge test logic
+│   ├── time-perception.js # Time Perception Challenge test logic
+│   └── dashboard.js      # Dashboard aggregation & rendering
 ├── package.json
 └── .gitignore
 ```
@@ -29,6 +30,7 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 4. **Demographics** - Gender, age group, ethnicity, ADHD diagnosis history. Editable anytime via nav.
 5. **Current Status** - Sleep quality, caffeine intake, focus level (1-5), lose-track-of-time frequency. Editable anytime via nav.
 6. **Tests** - Time Perception Challenge (Test 1) + Test 2 (TBD)
+7. **Dashboard** - Composite signal score, test breakdown, recommendations
 
 ## Test 1: Time Perception Challenge
 - **Flow**: Intro screen with instructions → 2 practice trials (6s, 12s, not scored) → 8 scored trials (randomized from pool [6,8,10,12,15,20s], no back-to-back duplicates) → Results screen
@@ -50,10 +52,22 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
   - Disclaimer and retake tips
 - **Persistence**: Results saved to session via API, restored on session reload
 
+## Dashboard
+- **Composite Signal Score (0-100)**: Higher = stronger ADHD-like signal
+- **Signal direction**: time_signal = 100 - time_control_score (inverted so worse time control = higher signal)
+- **Weights**: Screener 50%, Reaction Time 30%, Time Perception 20%
+- **Missing tests**: Weights redistributed proportionally; confidence lowered
+- **Recommendation buckets**: Lower (0-34), Mixed/Inconclusive (35-64), Higher (65-100)
+- **Confidence levels**: High (3 tests, no flags), Medium (2 tests), Low (1 test or quality flags)
+- **Test cards**: Show completion status, key metrics, signal contribution, view/retake buttons
+- **Context notes**: Flags poor sleep, high caffeine, low focus from status data
+- **Safety**: Prominent disclaimers, non-diagnostic language, clinician referral nudges
+
 ## Navigation
-- Top nav bar (Home, My Info, Status, Tests, Logout) appears after login
+- Top nav bar (Home, My Info, Status, Tests, Dashboard, Logout) appears after login
 - Users can navigate to any section at any time
 - My Info page pre-populates with saved data for editing
+- Dashboard auto-loads data when navigated to
 
 ## API Routes
 - `POST /api/register` - Create new account (username + password, min 4 chars, case-insensitive uniqueness)
@@ -65,6 +79,7 @@ An ADHD likelihood analysis application (ADHDecode) that guides users through a 
 - `POST /api/status` - Save current status data (sleepQuality, caffeineIntake, focusLevel, loseTrackOfTime)
 - `POST /api/test-results/time-perception` - Save time perception test results
 - `GET /api/test-results/time-perception` - Get previous time perception results
+- `GET /api/dashboard` - Get aggregated dashboard data with composite score, test breakdown, confidence
 
 ## Running
 The application starts via `node index.js` and serves on port 5000.

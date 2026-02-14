@@ -83,6 +83,15 @@ app.post('/api/status', (req, res) => {
 app.post('/api/test-results/time-perception', (req, res) => {
   if (!req.session.user) return res.status(401).json({ message: 'Not logged in' });
   req.session.user.timePerceptionResult = req.body;
+
+  if (!req.session.user.dashboardHistory) req.session.user.dashboardHistory = [];
+  req.session.user.dashboardHistory.push({
+    test_type: 'time_perception',
+    timestamp: req.body.completedAt || new Date().toISOString(),
+    score: req.body.score,
+    signal: Math.max(0, Math.min(100, 100 - req.body.score))
+  });
+
   res.json({ success: true });
 });
 
@@ -90,6 +99,80 @@ app.get('/api/test-results/time-perception', (req, res) => {
   if (!req.session.user) return res.status(401).json({ message: 'Not logged in' });
   if (!req.session.user.timePerceptionResult) return res.status(404).json({ message: 'No results' });
   res.json({ result: req.session.user.timePerceptionResult });
+});
+
+app.get('/api/dashboard', (req, res) => {
+  if (!req.session.user) return res.status(401).json({ message: 'Not logged in' });
+
+  const user = req.session.user;
+  const tests = {};
+  const qualityFlags = [];
+
+  if (user.timePerceptionResult) {
+    const tp = user.timePerceptionResult;
+    const timeSignal = Math.max(0, Math.min(100, 100 - tp.score));
+    const flags = [];
+    const scoredTrials = (tp.trials || []).filter(t => !t.is_practice);
+    if (scoredTrials.length < 6) flags.push('few_trials');
+    tests.time_perception = {
+      completed: true,
+      timestamp: tp.completedAt,
+      raw_metrics: { score: tp.score, category: tp.category, mae: tp.mae, variability: tp.variability, bias: tp.bias, mape: tp.mape, relVar: tp.relVar },
+      normalized_signal: Math.round(timeSignal),
+      quality_flags: flags
+    };
+    if (flags.length) qualityFlags.push(...flags);
+  } else {
+    tests.time_perception = { completed: false };
+  }
+
+  tests.screener = { completed: false };
+  tests.reaction_time = { completed: false };
+
+  const weights = { screener: 0.50, reaction_time: 0.30, time_perception: 0.20 };
+  let totalWeight = 0;
+  let weightedSum = 0;
+  let completedCount = 0;
+
+  for (const [key, w] of Object.entries(weights)) {
+    if (tests[key].completed) {
+      weightedSum += tests[key].normalized_signal * w;
+      totalWeight += w;
+      completedCount++;
+    }
+  }
+
+  let compositeScore = null;
+  let bucket = 'inconclusive';
+  let confidence = 'low';
+
+  if (totalWeight > 0) {
+    compositeScore = Math.round(weightedSum / totalWeight);
+    compositeScore = Math.max(0, Math.min(100, compositeScore));
+
+    if (compositeScore <= 34) bucket = 'lower';
+    else if (compositeScore <= 64) bucket = 'mixed';
+    else bucket = 'higher';
+  }
+
+  if (completedCount >= 3 && qualityFlags.length === 0) confidence = 'high';
+  else if (completedCount >= 2) confidence = 'medium';
+  else confidence = 'low';
+
+  const history = user.dashboardHistory || [];
+
+  res.json({
+    compositeScore,
+    bucket,
+    confidence,
+    completedCount,
+    totalTests: 3,
+    tests,
+    weights,
+    qualityFlags,
+    history,
+    status: user.status || null
+  });
 });
 
 app.post('/api/logout', (req, res) => {
